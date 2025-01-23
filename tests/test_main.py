@@ -24,7 +24,7 @@ def test_main_succeeds(runner: CliRunner) -> None:
     assert result.exit_code == 0
 
 def test_generate_jwt_succeeds() -> None:
-    authorization = auth.Auth(private_key=PRIVATE_KEY, rpc_url=RPC_URL, chain_id=CHAIN_ID, sub_account_id="2")
+    authorization = auth.Auth(private_key=PRIVATE_KEY, rpc_url=RPC_URL, chain_id=CHAIN_ID, account=ACCOUNT, sub_account_id=2)
     assert authorization.jwt is not None
 
 def test_generate_jwt_succeeds_with_jwt() -> None:

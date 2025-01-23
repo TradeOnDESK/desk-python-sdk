@@ -3,11 +3,12 @@ from web3 import Web3
 from eth_keys import keys
 from eth_account.messages import  encode_defunct
 
-from desk.api import api_generate_jwt
-from desk.utils import generate_nonce
+from desk.api import Api
+from desk.utils.utils import generate_nonce
 
-class Auth:
-    def __init__(self, chain_id: int = None, rpc_url: str = None, sub_account_id: str = None, private_key: str = None, jwt: str = None):
+class Auth(Api):
+    def __init__(self, chain_id: int = None, rpc_url: str = None, account: str = None, sub_account_id: int = None, private_key: str = None, jwt: str = None):
+        super().__init__()
         if jwt:
             self.jwt = jwt
         else:
@@ -16,11 +17,11 @@ class Auth:
 
             self.chain_id = chain_id
             self.rpc_url = rpc_url
-            self.sub_account_id = sub_account_id
+            self.sub_account_id = str(sub_account_id)
             self.provider = self.__get_provider()
 
             self.eth_signer = Account.from_key(private_key)
-            self.account = self.eth_signer.address
+            self.account = account
 
             self.nonce = str(generate_nonce())
             self.signature = self.__sign_msg()
@@ -42,7 +43,16 @@ class Auth:
         return signed_data.signature.hex()
     
     def __generate_jwt(self) -> str:
-        jwt = api_generate_jwt(self.account, self.sub_account_id, self.nonce, self.signature)
+        jwt = self.__api_generate_jwt(self.account, self.sub_account_id, self.nonce, self.signature)
 
         return jwt
     
+    def __api_generate_jwt(self, account: str, sub_account_id: str, nonce: str, signature: str) -> str:
+        resp = self.post(f"/v2/auth/evm", payload={
+            "account": account,
+            "subaccount_id": sub_account_id,
+            "nonce": nonce,
+            "signature": signature
+        })
+
+        return resp["data"]["jwt"]
