@@ -12,4 +12,4 @@ build:
 	poetry build --ansi
 
 publish:
-	python3 -m twine upload dist/*
+	poetry publish

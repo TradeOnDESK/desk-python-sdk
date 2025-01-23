@@ -22,8 +22,11 @@ Changelog = "https://github.com/chenciao8/desk-python-sdk/releases"
 python = "^3.9"
 click = ">=8.0.1"
 docutils = "^0.21.2"
+eth-account = "^0.13.4"
+web3 = "^7.7.0"
 
 [tool.poetry.group.dev.dependencies]
+python-dotenv = "^1.0.1"
 Pygments = ">=2.10.0"
 black = ">=21.10b0"
 coverage = {extras = ["toml"], version = ">=6.2"}
