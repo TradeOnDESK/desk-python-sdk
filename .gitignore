@@ -12,3 +12,4 @@ __pycache__/
 .cookiecutter.json
 .vscode/
 .env
+local/
