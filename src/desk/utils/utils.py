@@ -1,6 +1,5 @@
 import random
 import time
-from web3 import Web3
 
 
 def int_to_byte32(val: int) -> bytes:
@@ -9,7 +8,7 @@ def int_to_byte32(val: int) -> bytes:
 
 def get_sub_account(account: str, sub_account_id: int):
   check_sub_account_id_param(sub_account_id)
-  return Web3.to_checksum_address(hex(int(account, 16) ^ sub_account_id))
+  return account + str(sub_account_id).zfill(24)
 
 
 def check_sub_account_id_param(sub_account_id: int):

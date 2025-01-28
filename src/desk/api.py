@@ -23,12 +23,23 @@ class Api:
         url = self.api_url + url_path
         response = self.session.post(url, json=payload)
         self._handle_exception(response)
+
         try:
             return response.json()
         except ValueError:
             return {"error": f"Could not parse JSON: {response.text}"}
         
-    def _handle_exception(self, response):
+    def get(self, url_path: str, params: dict = None):
+        url = self.api_url + url_path
+        response = self.session.get(url, params=params)
+        self._handle_exception(response)
+
+        try:
+            return response.json()
+        except ValueError:
+            return {"error": f"Could not parse JSON: {response.text}"}  
+        
+    def _handle_exception(self, response: r.Response):
         status_code = response.status_code
         if status_code < 400:
             return
@@ -40,5 +51,5 @@ class Api:
             if err is None:
                 raise ClientError(status_code, None, response.text, None, response.headers)
             error_data = err.get("data")
-            raise ClientError(status_code, err["code"], err["msg"], response.headers, error_data)
+            raise ClientError(status_code, err["code"], err["message"], response.headers, error_data)
         raise ServerError(status_code, response.text)
