@@ -4,24 +4,27 @@ from eth_keys import keys
 from eth_account.messages import  encode_defunct
 
 from desk.api import Api
-from desk.utils.utils import generate_nonce
+from desk.utils.utils import generate_nonce, get_sub_account
 
 class Auth(Api):
-    def __init__(self, chain_id: int = None, rpc_url: str = None, account: str = None, sub_account_id: int = None, private_key: str = None, jwt: str = None):
+    def __init__(self, chain_id: int, rpc_url: str, account: str, sub_account_id: int, private_key: str, jwt: str = None):
+        if not chain_id or not rpc_url or not sub_account_id or not private_key or not account:
+                raise ValueError("chain_id, rpc_url, sub_account_id, and private_key are required")
         super().__init__()
+        self.chain_id = chain_id
+        self.rpc_url = rpc_url
+        self.sub_account_id = str(sub_account_id)
+
+        self.eth_provider = self.__get_provider()
+        self.eth_signer = Account.from_key(private_key)
+        self.account = account
+
+        self.sub_account = get_sub_account(account, sub_account_id)
+        
         if jwt:
+            print('JWT provided, skip generating...')
             self.jwt = jwt
         else:
-            if not chain_id or not rpc_url or not sub_account_id or not private_key:
-                raise ValueError("chain_id, rpc_url, sub_account_id, and private_key are required if jwt is not provided")
-
-            self.chain_id = chain_id
-            self.rpc_url = rpc_url
-            self.sub_account_id = str(sub_account_id)
-            self.provider = self.__get_provider()
-
-            self.eth_signer = Account.from_key(private_key)
-            self.account = account
 
             self.nonce = str(generate_nonce())
             self.signature = self.__sign_msg()
