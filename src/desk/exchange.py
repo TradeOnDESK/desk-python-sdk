@@ -20,6 +20,11 @@ BROKER = os.getenv("BROKER")
 
 
 class Exchange:
+    """
+    Exchange class for creating and managing orders / deposit or withdraw collateral
+
+    Needed "Auth" object to be initialized
+    """
     def __init__(self, api_url: str = API_URL, broker: str = BROKER, auth: Auth = None):
         self.jwt = auth.jwt
         self.auth = auth
@@ -73,6 +78,19 @@ class Exchange:
         return payload
 
     def place_order(self, order: CreatePlaceOrderFn):
+        """Place order
+
+        Args:
+            {
+                "amount": str,
+                "price": str,
+                "side": Literal["Long", "Short"],
+                "symbol": str,
+                "orderType": Literal["Limit", "Market", "Stop", "StopMarket", "TakeProfit", "TakeProfitMarket"],
+                "reduceOnly": Optional[bool],
+                "triggerPrice": Optional[str]
+            } : CreatePlaceOrderFn
+        """
         payload = self.__create_place_order_payload(order)
         return self.api.post("/v2/place-order", payload=payload)
 
@@ -91,10 +109,28 @@ class Exchange:
         return payload
 
     def cancel_order(self, order: CancelOrderFn):
+        """Cancel order
+
+        Args:
+            {
+                "symbol": str,
+                "orderDigest": str,
+                "isConditionalOrder": bool
+            } : CancelOrderFn
+        """
         payload = self.__create_cancel_order_payload(order)
         return self.api.post("/v2/cancel-order", payload=payload)
 
     def deposit_collateral(self, asset: str, amount: float):
+        """Deposit collateral
+
+        Args:
+            asset (str): asset name
+            amount (float): amount to deposit (human readable)
+
+        Returns:
+            transaction hash: str   
+        """
         collateral = self.token_profile[asset]
         collateral_address = collateral["address"]
 
@@ -130,6 +166,15 @@ class Exchange:
 
 
     def withdraw_collateral(self, asset: str, amount: float):
+        """Withdraw collateral
+
+        Args:
+            asset (str): asset name
+            amount (float): amount to withdraw (human readable)
+
+        Returns:
+            transaction hash: str
+        """
         collateral = self.token_profile[asset]
         collateral_address = collateral["address"]
 

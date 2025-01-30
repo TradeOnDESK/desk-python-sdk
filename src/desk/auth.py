@@ -7,6 +7,17 @@ from desk.api import Api
 from desk.utils.utils import generate_nonce, get_sub_account
 
 class Auth(Api):
+    """Authentication class for DESK. Is needed if want to use "Exchange" class.
+
+    Args:
+        chain_id (int): chain id (8453 for base mainnet) other can be found on https://chainlist.org/
+        rpc_url (str): rpc url can be found on https://chainlist.org/
+        account (str): evm account address
+        sub_account_id (int): sub account id (max 255 but in web only display up to 5 (0 - 4))
+        private_key (str): private key
+        jwt (str): jwt (if provided, skip generating)
+
+    """
     def __init__(self, chain_id: int, rpc_url: str, account: str, sub_account_id: int, private_key: str, jwt: str = None):
         if not chain_id or not rpc_url or not sub_account_id or not private_key or not account:
                 raise ValueError("chain_id, rpc_url, sub_account_id, and private_key are required")
