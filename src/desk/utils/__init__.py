@@ -3,3 +3,10 @@ from desk.utils.utils import (
     get_sub_account,
     generate_nonce
 )
+
+from desk.utils.mapper import (
+    get_contract_address, 
+    map_token_profile
+    )
+
+from desk.utils.contract import load_contract
