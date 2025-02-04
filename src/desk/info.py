@@ -3,7 +3,7 @@ from typing import Any, Callable
 from dotenv import load_dotenv
 from desk import utils
 from desk.api import Api
-from desk.types import Subscription
+from desk.types import SubAccountSummary, Subscription
 from desk.ws_manager import WebSocketManager
 import requests as r
 
@@ -41,6 +41,12 @@ class Info:
             raise Exception(
                 "Cannot subscribe to websocket when skip_ws is True")
         self.ws_manager.subscribe(subscription, callback)
+
+    def disconnect_websocket(self):
+        if self.ws_manager is None:
+            raise RuntimeError("Cannot call disconnect_websocket since skip_ws was used")
+        else:
+            self.ws_manager.stop()
 
     def get_market_info(self):
         """Get market info for current broker
@@ -123,7 +129,7 @@ class Info:
         """
         return self.api.get("/v2/trades", params={"symbol": symbol})
 
-    def get_subaccount_summary(self, account: str, sub_account_id: int):
+    def get_subaccount_summary(self, account: str, sub_account_id: int) -> SubAccountSummary:
         """Get subaccount summary
 
         Args:

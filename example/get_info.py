@@ -18,7 +18,16 @@ from desk.info import Info
 
 def get_info():
     info = Info(skip_ws=True)
-    print(info.get_subaccount_summary(ACCOUNT, 2))
+    data = info.get_subaccount_summary(ACCOUNT, 2)["open_orders"]
+
+    for order in data:
+        print(f"Symbol: {order['symbol']}")
+        print(f"Side: {order['side']}")
+        print(f"Order Type: {order['order_type']}")
+        print(f"Price: {order['price']}")
+        print(f"Amount: {order['original_quantity']}")
+        print("-" * 50)
+
     print(info.get_mark_price())
     print(info.get_last_trades("BTCUSD"))
     print(info.get_collaterals_info())

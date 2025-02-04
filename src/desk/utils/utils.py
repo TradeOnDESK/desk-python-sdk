@@ -1,3 +1,4 @@
+import enum
 import random
 import time
 
@@ -20,3 +21,8 @@ def generate_nonce() -> int:
   expired_at = (int(time.time()) + 60 * 1) * (1 << 20)
   random_number = random.randint(0, (1 << 20) - 1)
   return (expired_at + random_number) * 1000
+
+def convert_enum_to_string(enum_value: enum.Enum | str) -> str:
+  if isinstance(enum_value, enum.Enum):
+    return enum_value.value
+  return enum_value

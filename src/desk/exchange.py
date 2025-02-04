@@ -1,9 +1,12 @@
+import enum
 import os
+from typing import Any, List, Optional
 from dotenv import load_dotenv
 from web3 import Web3
 from desk.api import Api
 from desk.auth import Auth
-from desk.types import CancelOrderFn, CancelOrderRequestV2, CreatePlaceOrderFn, OrderRequestV2
+from desk.types import CancelAllOrdersFn, CancelAllOrdersRequest, CancelOrderFn, CancelOrderRequest, CreatePlaceOrderFn, OrderRequest, OrderSide, OrderType, PlaceOrderResponse, TimeInForce
+import desk.enum as enum
 from desk.constant.contract import VAULT_CONTRACT_ABI, ERC20_ABI_PATH
 from desk.utils import (
     load_contract, 
@@ -11,6 +14,7 @@ from desk.utils import (
     map_token_profile,
     generate_nonce
 )
+from desk.utils.utils import convert_enum_to_string
 
 load_dotenv()
 
@@ -46,80 +50,182 @@ class Exchange:
 
     def __get_token_profile(self):
         resp = self.api.get("/v2/collaterals")
-        if resp["code"] != 200:
-            raise Exception("Failed to get token profile")
-        return map_token_profile(resp["data"], self.auth.chain_id)
+        return map_token_profile(resp, self.auth.chain_id)
 
     def __create_place_order_payload(self, order: CreatePlaceOrderFn):
         nonce = generate_nonce()
 
-        payload: OrderRequestV2 = {
+        payload: OrderRequest = {
             "nonce": str(nonce),
             "amount": order["amount"],
             "price": order["price"],
-            "side": order["side"],
             "symbol": order["symbol"],
-
-            "order_type": order["orderType"],
 
             "broker_id": self.broker,
             "subaccount": self.auth.sub_account,
+
+            "order_type": convert_enum_to_string(order["orderType"]),
+            "side": convert_enum_to_string(order["side"]),
+            "symbol": convert_enum_to_string(order["symbol"]),
         }
 
+        # TIF
+        if order["orderType"] == "Limit" or order["orderType"] == "Stop":
+            payload["time_in_force"] = convert_enum_to_string(order["timeInForce"])
+
+        # Optional args
         if "reduceOnly" in order:
             payload["reduce_only"] = order["reduceOnly"]
 
         if "triggerPrice" in order:
             payload["trigger_price"] = order["triggerPrice"]
 
-        if order["orderType"] == "Limit" or "Stop":
-            payload["time_in_force"] = order["timeInForce"]
+        if "clientOrderId" in order:
+            payload["client_order_id"] = order["clientOrderId"]
 
         return payload
 
-    def place_order(self, order: CreatePlaceOrderFn):
+    def place_order(
+        self,
+        amount: str,
+        price: str,
+        side: OrderSide | enum.OrderSide,
+        symbol: str | enum.MarketSymbol,
+        order_type: OrderType | enum.OrderType,
+        reduce_only: Optional[bool] = None,
+        trigger_price: Optional[str] = None,
+        time_in_force: Optional[TimeInForce | enum.TimeInForce] = None,
+        wait_for_reply: bool = False,
+        client_order_id: Optional[str] = None
+    ) -> PlaceOrderResponse:
         """Place order
 
         Args:
-            {
-                "amount": str,
-                "price": str,
-                "side": Literal["Long", "Short"],
-                "symbol": str,
-                "orderType": Literal["Limit", "Market", "Stop", "StopMarket", "TakeProfit", "TakeProfitMarket"],
-                "reduceOnly": Optional[bool],
-                "triggerPrice": Optional[str]
-            } : CreatePlaceOrderFn
+            amount (str): order amount
+            price (str): order price
+            side (OrderSide): order side
+            symbol (str): market symbol
+            order_type (OrderType): order type
+            reduce_only (Optional[bool]): whether the order is a reduce only order
+            trigger_price (Optional[str]): trigger price
+            time_in_force (Optional[TimeInForce]): time in force
+            wait_for_reply (bool): should api wait for reply
+            client_order_id (Optional[str]): client order id (max alphanumeric 36 characters)
         """
+        order: CreatePlaceOrderFn = {
+            "amount": amount,
+            "price": price,
+            "side": side,
+            "symbol": symbol,
+            "orderType": order_type,
+            "reduceOnly": reduce_only,
+            "triggerPrice": trigger_price,
+            "timeInForce": time_in_force,
+            "waitForReply": wait_for_reply,
+            "clientOrderId": client_order_id
+        }
         payload = self.__create_place_order_payload(order)
         return self.api.post("/v2/place-order", payload=payload)
+    
+    def batch_place_order(self, orders: List[CreatePlaceOrderFn]) -> Any:
+        payloads = [self.__create_place_order_payload(order) for order in orders]
+        return self.api.post("/v2/batch-place-order", payload=payloads)
 
-    def __create_cancel_order_payload(self, order: CancelOrderFn) -> CancelOrderRequestV2:
+    def __create_cancel_order_payload(self, order: CancelOrderFn) -> CancelOrderRequest:
         nonce = generate_nonce()
 
-        payload: CancelOrderRequestV2 = {
+        payload: CancelOrderRequest = {
             "nonce": str(nonce),
             "subaccount": self.auth.sub_account,
             "symbol": order["symbol"],
             "order_digest": order["orderDigest"],
-            "is_conditional_order": order["isConditionalOrder"],
-            "wait_for_reply": False
         }
+
+        # convert enum to string
+        payload["symbol"] = convert_enum_to_string(order["symbol"])
+
+        if "isConditionalOrder" in order:
+            payload["is_conditional_order"] = order["isConditionalOrder"]
+
+        if "waitForReply" in order:
+            payload["wait_for_reply"] = order["waitForReply"]
+
+        if "clientOrderId" in order:
+            payload["client_order_id"] = order["clientOrderId"]
 
         return payload
 
-    def cancel_order(self, order: CancelOrderFn):
+    def cancel_order(
+        self,
+        symbol: str | enum.MarketSymbol,
+        order_digest: str,
+        is_conditional_order: bool,
+        wait_for_reply: bool = False,
+        client_order_id: Optional[str] = None
+    ) -> Any:
         """Cancel order
 
         Args:
-            {
-                "symbol": str,
-                "orderDigest": str,
-                "isConditionalOrder": bool
-            } : CancelOrderFn
+            symbol (str): market symbol
+            order_digest (str): order digest
+            is_conditional_order (bool): whether the order is a conditional order
+            wait_for_reply (bool): should api wait for reply
+            client_order_id (str): client order id to cancel
         """
+        order: CancelOrderFn = {
+            "symbol": symbol,
+            "orderDigest": order_digest,
+            "isConditionalOrder": is_conditional_order,
+            "waitForReply": wait_for_reply,
+            "clientOrderId": client_order_id
+        }
         payload = self.__create_cancel_order_payload(order)
         return self.api.post("/v2/cancel-order", payload=payload)
+    
+    def batch_cancel_order(self, orders: List[CancelOrderFn]) -> Any:
+        """Batch cancel order
+
+        Args:
+            orders (List[CancelOrderFn]): list of orders to cancel
+
+            CancelOrderFn: {
+                "symbol": str,
+                "orderDigest": str,
+                "isConditionalOrder": bool, # optional
+                "waitForReply": bool, # optional
+                "clientOrderId": str # optional
+            }
+        """
+        payloads = [self.__create_cancel_order_payload(order) for order in orders]
+        return self.api.post("/v2/batch-cancel-order", payload=payloads)
+    
+    def __create_cancel_all_orders_payload(self, order: CancelAllOrdersFn) -> CancelAllOrdersRequest:
+        nonce = generate_nonce()
+
+        payload: CancelAllOrdersRequest = {
+            "nonce": str(nonce),
+            "subaccount": self.auth.sub_account,
+            "symbol": order["symbol"],
+            "is_conditional_order": order["isConditionalOrder"],
+            "wait_for_reply": order["waitForReply"],
+        }
+        return payload
+    
+    def cancel_all_orders(self, symbol: str = None, is_conditional_order: bool = False, wait_for_reply: bool = False) -> Any:
+        """Cancel all orders
+
+        Args:
+            symbol (str): symbol to cancel all orders for
+            is_conditional_order (bool): whether the order is a conditional order
+            wait_for_reply (bool): should api wait for reply
+        """
+        order: CancelAllOrdersFn = {
+            "symbol": symbol,
+            "isConditionalOrder": is_conditional_order,
+            "waitForReply": wait_for_reply,
+        }
+        payload = self.__create_cancel_all_orders_payload(order)
+        return self.api.post("/v2/cancel-all-orders", payload=payload)
 
     def deposit_collateral(self, asset: str, amount: float):
         """Deposit collateral
