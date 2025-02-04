@@ -1,10 +1,15 @@
 import os
 from pathlib import Path
 import sys
+from time import sleep
 from dotenv import load_dotenv
 
 path_root = Path(__file__).parents[1]
-sys.path.append(str(path_root)+'/src')
+sys.path.append(str(path_root) + '/src')
+
+from desk.exchange import Exchange  # noqa
+from desk import auth  # noqa
+from desk.enum import OrderSide, OrderType, TimeInForce, MarketSymbol  # noqa
 
 load_dotenv()
 
@@ -14,35 +19,38 @@ ACCOUNT = os.getenv("ACCOUNT")
 CHAIN_ID = os.getenv("CHAIN_ID")
 WS_URL = os.getenv("WS_URL")
 
-from desk import auth
-from desk.exchange import Exchange
 
 def place_order(exchange: Exchange):
-    resp = exchange.place_order({
-        "symbol": "BTCUSD",
-        "amount": "0.001",
-        "price": "100000",
-        "side": "Long",
-        "orderType": "Limit",
-        "timeInForce": "GTC"
-    })
-    print(resp)
+    resp = exchange.place_order(
+        symbol=MarketSymbol.BTCUSD,
+        amount="0.001",
+        price="100000",
+        side=OrderSide.LONG,
+        order_type=OrderType.LIMIT,
+        time_in_force=TimeInForce.GTC,
+        wait_for_reply=True
+    )
     return resp
 
+
 def cancel_order(exchange: Exchange, order_digest: str):
-    resp = exchange.cancel_order({
-        "symbol": "BTCUSD",
-        "orderDigest": order_digest,
-        "isConditionalOrder": False
-    })
+    resp = exchange.cancel_order(
+        symbol=MarketSymbol.BTCUSD,
+        order_digest=order_digest,
+        is_conditional_order=False,
+        wait_for_reply=True
+    )
     print(resp)
 
 
 def main():
-    jwt = auth.Auth(private_key=PRIVATE_KEY, rpc_url=RPC_URL, chain_id=CHAIN_ID, account=ACCOUNT, sub_account_id=2)
+    jwt = auth.Auth(private_key=PRIVATE_KEY, rpc_url=RPC_URL,
+                    chain_id=CHAIN_ID, account=ACCOUNT, sub_account_id=2)
     exchange = Exchange(auth=jwt)
     resp = place_order(exchange)
-    cancel_order(exchange, resp['data']['order_digest'])
+    sleep(2)
+    cancel_order(exchange, resp['order_digest'])
+
 
 if __name__ == "__main__":
     main()

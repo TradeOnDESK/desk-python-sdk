@@ -69,4 +69,4 @@ class Auth(Api):
             "signature": signature
         })
 
-        return resp["data"]["jwt"]
+        return resp["jwt"]

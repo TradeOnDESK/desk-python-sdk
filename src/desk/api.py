@@ -28,7 +28,7 @@ class Api:
         self.__handle_exception(response)
 
         try:
-            return response.json()
+            return response.json()["data"]
         except ValueError:
             return {"error": f"Could not parse JSON: {response.text}"}
         
@@ -38,7 +38,7 @@ class Api:
         self.__handle_exception(response)
 
         try:
-            return response.json()
+            return response.json()["data"]
         except ValueError:
             return {"error": f"Could not parse JSON: {response.text}"}  
         
