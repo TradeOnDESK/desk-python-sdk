@@ -59,7 +59,6 @@ class Exchange:
             "nonce": str(nonce),
             "amount": order["amount"],
             "price": order["price"],
-            "symbol": order["symbol"],
 
             "broker_id": self.broker,
             "subaccount": self.auth.sub_account,
@@ -137,12 +136,9 @@ class Exchange:
         payload: CancelOrderRequest = {
             "nonce": str(nonce),
             "subaccount": self.auth.sub_account,
-            "symbol": order["symbol"],
             "order_digest": order["orderDigest"],
+            "symbol": convert_enum_to_string(order["symbol"]),
         }
-
-        # convert enum to string
-        payload["symbol"] = convert_enum_to_string(order["symbol"])
 
         if "isConditionalOrder" in order:
             payload["is_conditional_order"] = order["isConditionalOrder"]
@@ -205,7 +201,7 @@ class Exchange:
         payload: CancelAllOrdersRequest = {
             "nonce": str(nonce),
             "subaccount": self.auth.sub_account,
-            "symbol": order["symbol"],
+            "symbol": convert_enum_to_string(order["symbol"]),
             "is_conditional_order": order["isConditionalOrder"],
             "wait_for_reply": order["waitForReply"],
         }
