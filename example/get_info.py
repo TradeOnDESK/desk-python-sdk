@@ -1,24 +1,15 @@
-import os
 from pathlib import Path
 import sys
-from dotenv import load_dotenv
 
 path_root = Path(__file__).parents[1]
 sys.path.append(str(path_root)+'/src')
 
-load_dotenv()
-
-PRIVATE_KEY = os.getenv("PRIVATE_KEY")
-RPC_URL = os.getenv("RPC_URL")
-ACCOUNT = os.getenv("ACCOUNT")
-CHAIN_ID = os.getenv("CHAIN_ID")
-WS_URL = os.getenv("WS_URL")
-
 from desk.info import Info
+from constants import API_URL, ACCOUNT, SUB_ACCOUNT_ID
 
 def get_info():
-    info = Info(skip_ws=True)
-    data = info.get_subaccount_summary(ACCOUNT, 2)["open_orders"]
+    info = Info(skip_ws=True, api_url=API_URL)
+    data = info.get_subaccount_summary(ACCOUNT, SUB_ACCOUNT_ID)["open_orders"]
 
     for order in data:
         print(f"Symbol: {order['symbol']}")

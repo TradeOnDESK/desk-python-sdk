@@ -2,17 +2,13 @@ import json
 import logging
 from typing import Any
 import requests as r
-import os
-from dotenv import load_dotenv
-
 from desk.utils.error import ClientError, ServerError
 
-load_dotenv()
-
-API_URL = os.getenv("API_URL")
 
 class Api:
-    def __init__(self, api_url: str = API_URL, headers: dict = None):
+    def __init__(self, api_url: str, headers: dict = None):
+        if not api_url:
+            raise Exception("api_url is required")
         self.api_url = api_url
         self.session = r.Session()
         self.session.headers.update({"Content-Type": "application/json"})
@@ -53,6 +49,6 @@ class Api:
                 raise ClientError(status_code, None, response.text, None, response.headers)
             if err is None:
                 raise ClientError(status_code, None, response.text, None, response.headers)
-            error_data = err.get("data")
+            error_data = err.get("errors")
             raise ClientError(status_code, err["code"], err["message"], response.headers, error_data)
         raise ServerError(status_code, response.text)

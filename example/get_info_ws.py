@@ -1,25 +1,17 @@
 from datetime import datetime
-import os
 from pathlib import Path
 import sys
-from dotenv import load_dotenv
 
 path_root = Path(__file__).parents[1]
 sys.path.append(str(path_root)+'/src')
 
-load_dotenv()
-
-PRIVATE_KEY = os.getenv("PRIVATE_KEY")
-RPC_URL = os.getenv("RPC_URL")
-ACCOUNT = os.getenv("ACCOUNT")
-CHAIN_ID = os.getenv("CHAIN_ID")
-WS_URL = os.getenv("WS_URL")
+from constants import WS_URL, API_URL
 
 from desk.info import Info
 from desk.types import IndexPriceSubscription, MarkPriceSubscription, OrderbookSubscription, TradeSubscription
 
 def get_info_ws():
-    info = Info()
+    info = Info(ws_url=WS_URL, api_url=API_URL)
     subscription: IndexPriceSubscription = {"type": "indexPricesV2"}
     info.subscribe(subscription, lambda x: print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] indexprice: ", x['data'][0]))
 

@@ -1,13 +1,12 @@
 import enum
-import os
 from typing import Any, List, Optional
-from dotenv import load_dotenv
 from web3 import Web3
 from desk.api import Api
 from desk.auth import Auth
 from desk.types import CancelAllOrdersFn, CancelAllOrdersRequest, CancelOrderFn, CancelOrderRequest, CreatePlaceOrderFn, OrderRequest, OrderSide, OrderType, PlaceOrderResponse, TimeInForce
 import desk.enum as enum
 from desk.constant.contract import VAULT_CONTRACT_ABI, ERC20_ABI_PATH
+from desk.constant.common import BROKER
 from desk.utils import (
     load_contract, 
     get_contract_address, 
@@ -16,11 +15,6 @@ from desk.utils import (
 )
 from desk.utils.utils import convert_enum_to_string
 
-load_dotenv()
-
-WS_URL = os.getenv("WS_URL")
-API_URL = os.getenv("API_URL")
-BROKER = os.getenv("BROKER")
 
 
 class Exchange:
@@ -29,9 +23,12 @@ class Exchange:
 
     Needed "Auth" object to be initialized
     """
-    def __init__(self, api_url: str = API_URL, broker: str = BROKER, auth: Auth = None):
+    def __init__(self, api_url: str, auth: Auth = None):
         self.jwt = auth.jwt
         self.auth = auth
+
+        if not api_url:
+            raise Exception("api_url is required")
 
         if not auth or not auth.jwt:
             raise Exception("Auth is required")
@@ -39,7 +36,6 @@ class Exchange:
         self.api = Api(api_url=api_url, headers={
                        "Authorization": f"Bearer {self.jwt}"})
         self.api_url = api_url
-        self.broker = broker
 
         self.contract_address = get_contract_address(self.auth.chain_id)
 
@@ -60,7 +56,7 @@ class Exchange:
             "amount": order["amount"],
             "price": order["price"],
 
-            "broker_id": self.broker,
+            "broker_id": BROKER,
             "subaccount": self.auth.sub_account,
 
             "order_type": convert_enum_to_string(order["orderType"]),
@@ -127,6 +123,8 @@ class Exchange:
         return self.api.post("/v2/place-order", payload=payload)
     
     def batch_place_order(self, orders: List[CreatePlaceOrderFn]) -> Any:
+        if len(orders) == 0:
+            raise Exception("Orders is empty")
         payloads = [self.__create_place_order_payload(order) for order in orders]
         return self.api.post("/v2/batch-place-order", payload=payloads)
 
@@ -192,6 +190,8 @@ class Exchange:
                 "clientOrderId": str # optional
             }
         """
+        if len(orders) == 0:
+            raise Exception("Orders is empty")
         payloads = [self.__create_cancel_order_payload(order) for order in orders]
         return self.api.post("/v2/batch-cancel-order", payload=payloads)
     
