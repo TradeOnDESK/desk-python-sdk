@@ -1,17 +1,9 @@
-import os
 from typing import Any, Callable
-from dotenv import load_dotenv
 from desk import utils
 from desk.api import Api
 from desk.types import SubAccountSummary, Subscription
 from desk.ws_manager import WebSocketManager
-import requests as r
-
-load_dotenv()
-
-WS_URL = os.getenv("WS_URL")
-API_URL = os.getenv("API_URL")
-BROKER = os.getenv("BROKER")
+from desk.constant.common import BROKER
 
 
 class Info:
@@ -21,14 +13,18 @@ class Info:
         skip_ws (bool): skip opening websocket connection
     """
 
-    def __init__(self, ws_url: str = WS_URL, api_url: str = API_URL, broker: str = BROKER, skip_ws: bool = False):
+    def __init__(self, api_url: str, skip_ws: bool = False, ws_url: str = None):
         self.skip_ws = skip_ws
         if not skip_ws:
+            if not ws_url:
+                raise Exception("ws_url is required when skip_ws is False")
             self.ws_manager = WebSocketManager(ws_url=ws_url)
             self.ws_manager.start()
+        
+        if not api_url:
+            raise Exception("api_url is required")
 
         self.api = Api(api_url=api_url)
-        self.broker = broker
 
     def subscribe(self, subscription: Subscription, callback: Callable[[Any], None]):
         """Subscribe to websocket
@@ -68,7 +64,7 @@ class Info:
                 }
             ]
         """
-        return self.api.get(f"/v2/market-info/brokers/{self.broker}")
+        return self.api.get(f"/v2/market-info/brokers/{BROKER}")
 
     def get_mark_price(self):
         """Get mark price for all active markets
