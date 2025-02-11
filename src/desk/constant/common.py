@@ -1,1 +1,1 @@
-BROKER = "DESK"
+BROKER = "DESK-SDK"
