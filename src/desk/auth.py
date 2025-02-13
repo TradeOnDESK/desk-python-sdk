@@ -48,7 +48,15 @@ class Auth(Api):
 
 
     def __sign_msg(self) -> str:
-        msg = f"generate jwt for {self.account.lower()} and subaccount id {self.sub_account_id} to trade on happytrading.global with nonce: {self.nonce}"
+        msg = f"""Welcome to DESK!
+
+Please sign this message to verify ownership of your wallet and proceed. By signing, you confirm the following: you have read, understood, and agreed to the Terms & Conditions, Privacy Policy, and any other relevant terms and conditions announced by DESK.
+
+This request will not trigger a blockchain transaction or cost any gas fees.
+
+Wallet address: {self.account.lower()}
+Sub-account id: {self.sub_account_id}
+Nonce: {self.nonce}"""
 
         encoded_msg = encode_defunct(text=msg)
         pk = keys.PrivateKey(self.eth_signer.key)
