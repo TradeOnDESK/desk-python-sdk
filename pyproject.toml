@@ -1,22 +1,22 @@
 [tool.poetry]
 name = "desk-python-sdk"
-version = "0.0.0"
-description = "Desk Python SDK"
+version = "0.0.1"
+description = "DESK Python SDK"
 authors = ["chenciao8 <chenciao8@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/chenciao8/desk-python-sdk"
-repository = "https://github.com/chenciao8/desk-python-sdk"
+homepage = "https://github.com/HMXOrg/desk-python-sdk"
+repository = "https://github.com/HMXOrg/desk-python-sdk"
 documentation = "https://desk-python-sdk.readthedocs.io"
 packages = [
     { include = "desk", from = "src" },
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
 ]
 
 [tool.poetry.urls]
-Changelog = "https://github.com/chenciao8/desk-python-sdk/releases"
+Changelog = "https://github.com/HMXOrg/desk-python-sdk/releases"
 
 [tool.poetry.dependencies]
 python = "^3.9"
