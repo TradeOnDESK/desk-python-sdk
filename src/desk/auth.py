@@ -19,7 +19,7 @@ class Auth(Api):
 
     """
     def __init__(self, api_url: str, chain_id: int, rpc_url: str, account: str, sub_account_id: int, private_key: str, jwt: str = None):
-        if not chain_id or not rpc_url or not sub_account_id or not private_key or not account or not api_url:
+        if not chain_id or not rpc_url or sub_account_id == None or not private_key or not account or not api_url:
                 raise ValueError("api_url, chain_id, rpc_url, sub_account_id, and private_key are required")
         super().__init__(api_url)
         self.chain_id = chain_id
