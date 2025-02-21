@@ -5,9 +5,9 @@ description = "DESK Python SDK"
 authors = ["chenciao8 <chenciao8@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/HMXOrg/desk-python-sdk"
-repository = "https://github.com/HMXOrg/desk-python-sdk"
-documentation = "https://github.com/HMXOrg/desk-python-sdk"
+homepage = "https://github.com/TradeOnDESK/desk-python-sdk"
+repository = "https://github.com/TradeOnDESK/desk-python-sdk"
+documentation = "https://github.com/TradeOnDESK/desk-python-sdk"
 packages = [
     { include = "desk", from = "src" },
 ]
@@ -16,7 +16,7 @@ classifiers = [
 ]
 
 [tool.poetry.urls]
-Changelog = "https://github.com/HMXOrg/desk-python-sdk/releases"
+Changelog = "https://github.com/TradeOnDESK/desk-python-sdk/releases"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -39,7 +39,7 @@ flake8-bandit = ">=2.1.2"
 flake8-bugbear = ">=21.9.2"
 flake8-docstrings = ">=1.6.0"
 flake8-rst-docstrings = ">=0.2.5"
-furo = ">=2021.11.12"
+furo = ">=2024.8.6"
 isort = "^6.0.0"
 mypy = ">=0.930"
 pep8-naming = ">=0.12.1"
