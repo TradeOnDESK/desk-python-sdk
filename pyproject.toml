@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "desk-python-sdk"
-version = "0.0.2"
+version = "0.0.3"
 description = "DESK Python SDK"
 authors = ["chenciao8 <chenciao8@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/HMXOrg/desk-python-sdk"
-repository = "https://github.com/HMXOrg/desk-python-sdk"
-documentation = "https://github.com/HMXOrg/desk-python-sdk"
+homepage = "https://github.com/TradeOnDESK/desk-python-sdk"
+repository = "https://github.com/TradeOnDESK/desk-python-sdk"
+documentation = "https://github.com/TradeOnDESK/desk-python-sdk"
 packages = [
     { include = "desk", from = "src" },
 ]
@@ -16,7 +16,7 @@ classifiers = [
 ]
 
 [tool.poetry.urls]
-Changelog = "https://github.com/HMXOrg/desk-python-sdk/releases"
+Changelog = "https://github.com/TradeOnDESK/desk-python-sdk/releases"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -39,8 +39,8 @@ flake8-bandit = ">=2.1.2"
 flake8-bugbear = ">=21.9.2"
 flake8-docstrings = ">=1.6.0"
 flake8-rst-docstrings = ">=0.2.5"
-furo = ">=2021.11.12"
-isort = ">=5.10.1"
+furo = ">=2024.8.6"
+isort = "^6.0.0"
 mypy = ">=0.930"
 pep8-naming = ">=0.12.1"
 pre-commit = ">=2.16.0"
@@ -48,9 +48,9 @@ pre-commit-hooks = ">=4.1.0"
 pytest = ">=6.2.5"
 pyupgrade = ">=2.29.1"
 safety = ">=1.10.3"
-sphinx = ">=4.3.2"
+sphinx = "^7.4.7"
 sphinx-autobuild = ">=2021.3.14"
-sphinx-click = ">=3.0.2"
+sphinx-click = "^6.0.0"
 typeguard = ">=2.13.3"
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 myst-parser = {version = ">=0.16.1"}

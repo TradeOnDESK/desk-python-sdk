@@ -140,7 +140,7 @@ from datetime import datetime
 
 # Subscribe to mark prices
 info.subscribe(
-    {"type": "markPricesV2"}, 
+    {"type": "markPricesV2"},
     lambda x: print("markprice: ", x['data'])
 )
 
