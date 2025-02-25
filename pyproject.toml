@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "desk-python-sdk"
-version = "0.0.3"
+version = "0.0.4"
 description = "DESK Python SDK"
 authors = ["chenciao8 <chenciao8@gmail.com>"]
 license = "MIT"
