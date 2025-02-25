@@ -44,7 +44,6 @@ class WebSocketManager(threading.Thread):
             return
         ws_msg: WsMessage = json.loads(message)
 
-        print(ws_msg)
 
         identifier = ws_msg['type']
         if identifier is None:
