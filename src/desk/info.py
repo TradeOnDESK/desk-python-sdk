@@ -13,7 +13,7 @@ class Info:
         skip_ws (bool): skip opening websocket connection
     """
 
-    def __init__(self, api_url: str, skip_ws: bool = False, ws_url: str = None):
+    def __init__(self, api_url: str, crm_url: str, skip_ws: bool = False, ws_url: str = None):
         self.skip_ws = skip_ws
         if not skip_ws:
             if not ws_url:
@@ -24,7 +24,7 @@ class Info:
         if not api_url:
             raise Exception("api_url is required")
 
-        self.api = Api(api_url=api_url)
+        self.api = Api(api_url=api_url, crm_url=crm_url)
 
     def subscribe(self, subscription: Subscription, callback: Callable[[Any], None]):
         """Subscribe to websocket
