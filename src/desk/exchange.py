@@ -23,7 +23,7 @@ class Exchange:
 
     Needed "Auth" object to be initialized
     """
-    def __init__(self, api_url: str, auth: Auth = None):
+    def __init__(self, api_url: str, crm_url: str, auth: Auth = None):
         self.jwt = auth.jwt
         self.auth = auth
 
@@ -33,10 +33,11 @@ class Exchange:
         if not auth or not auth.jwt:
             raise Exception("Auth is required")
 
-        self.api = Api(api_url=api_url, headers={
+        self.api = Api(api_url=api_url, crm_url=crm_url, headers={
                        "Authorization": f"Bearer {self.jwt}"})
         self.api_url = api_url
-
+        self.crm_url = crm_url
+        
         self.contract_address = get_contract_address(self.auth.chain_id)
 
         self.vault_contract = load_contract(

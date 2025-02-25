@@ -6,10 +6,11 @@ from desk.utils.error import ClientError, ServerError
 
 
 class Api:
-    def __init__(self, api_url: str, headers: dict = None):
-        if not api_url:
-            raise Exception("api_url is required")
+    def __init__(self, api_url: str, crm_url: str, headers: dict = None):
+        if not api_url or not crm_url:
+            raise Exception("api_url and crm_url are required")
         self.api_url = api_url
+        self.crm_url = crm_url
         self.session = r.Session()
         self.session.headers.update({"Content-Type": "application/json"})
         self._logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ class Api:
         try:
             return response.json()["data"]
         except ValueError:
-            return {"error": f"Could not parse JSON: {response.text}"}  
+            return {"error": f"Could not parse JSON: {response.text}"}
         
     def __handle_exception(self, response: r.Response):
         status_code = response.status_code
@@ -46,9 +47,21 @@ class Api:
             try:
                 err = json.loads(response.text)
             except json.JSONDecodeError:
-                raise ClientError(status_code, None, response.text, None, response.headers)
-            if err is None:
-                raise ClientError(status_code, None, response.text, None, response.headers)
+                raise Exception(response.text)
+            if err is None or err.get("errors") is None or err.get("code") is None or err.get("message") is None:
+                raise Exception(f"status_code: {status_code}, response: {response.text}")
             error_data = err.get("errors")
             raise ClientError(status_code, err["code"], err["message"], response.headers, error_data)
         raise ServerError(status_code, response.text)
+
+
+    def post_crm(self, url_path: str, payload: Any = None) -> Any:
+        payload = payload or {}
+        url = self.crm_url + url_path
+        response = self.session.post(url, json=payload)
+        self.__handle_exception(response)
+
+        try:
+            return response.json()["data"]
+        except ValueError:
+            return {"error": f"Could not parse JSON: {response.text}"}

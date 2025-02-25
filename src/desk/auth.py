@@ -18,10 +18,10 @@ class Auth(Api):
         jwt (str): jwt (if provided, skip generating)
 
     """
-    def __init__(self, api_url: str, chain_id: int, rpc_url: str, account: str, sub_account_id: int, private_key: str, jwt: str = None):
-        if not chain_id or not rpc_url or sub_account_id == None or not private_key or not account or not api_url:
-                raise ValueError("api_url, chain_id, rpc_url, sub_account_id, and private_key are required")
-        super().__init__(api_url)
+    def __init__(self, api_url: str, crm_url: str, chain_id: int, rpc_url: str, account: str, sub_account_id: int, private_key: str, jwt: str = None):
+        if not chain_id or not rpc_url or sub_account_id == None or not private_key or not account or not api_url or not crm_url:
+                raise ValueError("api_url, crm_url, chain_id, rpc_url, sub_account_id, and private_key are required")
+        super().__init__(api_url, crm_url)
         self.chain_id = chain_id
         self.rpc_url = rpc_url
         self.sub_account_id = str(sub_account_id)
@@ -40,7 +40,7 @@ class Auth(Api):
             self.nonce = str(generate_nonce())
             self.signature = self.__sign_msg()
 
-            self.jwt = self.__generate_jwt()
+            self.jwt, self.crm_jwt = self.__generate_jwt()
 
 
     def __get_provider(self) -> Web3:
@@ -66,8 +66,9 @@ Nonce: {self.nonce}"""
     
     def __generate_jwt(self) -> str:
         jwt = self.__api_generate_jwt(self.account, self.sub_account_id, self.nonce, self.signature)
+        crm_jwt = self.__api_generate_jwt_crm(self.account, self.sub_account_id, self.nonce, self.signature)
 
-        return jwt
+        return jwt, crm_jwt
     
     def __api_generate_jwt(self, account: str, sub_account_id: str, nonce: str, signature: str) -> str:
         resp = self.post(f"/v2/auth/evm", payload={
@@ -78,3 +79,15 @@ Nonce: {self.nonce}"""
         })
 
         return resp["jwt"]
+    
+    def __api_generate_jwt_crm(self, account: str, sub_account_id: str, nonce: str, signature: str) -> str:
+        resp = self.post_crm(f"/v1/users/auth", payload={
+            "wallet_address": account,
+            "subaccount_id": sub_account_id,
+            "nonce": nonce,
+            "signature": signature
+        })
+
+        print(resp['access_token'])
+
+        return resp["access_token"]
