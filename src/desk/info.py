@@ -173,24 +173,22 @@ class Info:
         sub_account = str(utils.get_sub_account(account, sub_account_id))
         return self.api.get(f"/v2/subaccount-summary/{sub_account}")
     
-    def get_funding_rates(self, symbol: str):
+    def get_current_funding_rate(self, symbol: str):
         """Get funding rates for a market
 
         Args:
             symbol (str): market symbol to get funding rates for
 
         Returns:
-            [
-                {
-                    symbol: str,
-                    index_price: str,
-                    interest_rate: str,
-                    last_funding_rate: str,
-                    mark_price: str,
-                    next_funding_timestamp: int,
-                    timestamp: int
-                }
-            ]
+            {
+                symbol: str,
+                index_price: str,
+                interest_rate: str,
+                last_funding_rate: str,
+                mark_price: str,
+                next_funding_timestamp: int,
+                timestamp: int
+            }
         """
         return self.api.get(f"/v2/premium-index", params={"symbol": symbol})
     
@@ -204,12 +202,12 @@ class Info:
 
         Returns:
             [
-                [{
+                {
                     funding_rate: str,
                     apr: str,
                     avg_premium_index: str,
                     created_at: int
-                }]
+                ]
             ]
         """
         return self.api.get(f"/v2/funding-rate-history/{symbol}", params={"from": start_time, "to": end_time})
