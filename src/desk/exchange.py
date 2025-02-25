@@ -52,6 +52,10 @@ class Exchange:
     def __create_place_order_payload(self, order: CreatePlaceOrderFn):
         nonce = generate_nonce()
 
+        order_type = convert_enum_to_string(order["orderType"])
+        side = convert_enum_to_string(order["side"])
+        symbol = convert_enum_to_string(order["symbol"])
+        
         payload: OrderRequest = {
             "nonce": str(nonce),
             "amount": order["amount"],
@@ -60,13 +64,13 @@ class Exchange:
             "broker_id": BROKER,
             "subaccount": self.auth.sub_account,
 
-            "order_type": convert_enum_to_string(order["orderType"]),
-            "side": convert_enum_to_string(order["side"]),
-            "symbol": convert_enum_to_string(order["symbol"]),
+            "order_type": order_type,
+            "side": side,
+            "symbol": symbol,
         }
 
         # TIF
-        if order["orderType"] == "Limit" or order["orderType"] == "Stop":
+        if order_type == "Limit" or order_type == "Stop":
             payload["time_in_force"] = convert_enum_to_string(order["timeInForce"])
 
         # Optional args
@@ -112,7 +116,7 @@ class Exchange:
             "amount": amount,
             "price": price,
             "side": side,
-            "symbol": convert_enum_to_string(symbol),
+            "symbol": symbol,
             "orderType": order_type,
             "reduceOnly": reduce_only,
             "triggerPrice": trigger_price,
