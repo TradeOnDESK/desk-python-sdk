@@ -44,7 +44,6 @@ class WebSocketManager(threading.Thread):
             return
         ws_msg: WsMessage = json.loads(message)
 
-
         identifier = ws_msg['type']
         if identifier is None:
             logging.debug("Websocket not handling empty message")
