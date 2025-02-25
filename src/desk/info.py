@@ -13,7 +13,7 @@ class Info:
         skip_ws (bool): skip opening websocket connection
     """
 
-    def __init__(self, api_url: str, skip_ws: bool = False, ws_url: str = None):
+    def __init__(self, api_url: str, crm_url: str, skip_ws: bool = False, ws_url: str = None):
         self.skip_ws = skip_ws
         if not skip_ws:
             if not ws_url:
@@ -24,7 +24,7 @@ class Info:
         if not api_url:
             raise Exception("api_url is required")
 
-        self.api = Api(api_url=api_url)
+        self.api = Api(api_url=api_url, crm_url=crm_url)
 
     def subscribe(self, subscription: Subscription, callback: Callable[[Any], None]):
         """Subscribe to websocket
@@ -172,3 +172,43 @@ class Info:
         """
         sub_account = str(utils.get_sub_account(account, sub_account_id))
         return self.api.get(f"/v2/subaccount-summary/{sub_account}")
+    
+    def get_current_funding_rate(self, symbol: str):
+        """Get funding rates for a market
+
+        Args:
+            symbol (str): market symbol to get funding rates for
+
+        Returns:
+            {
+                symbol: str,
+                index_price: str,
+                interest_rate: str,
+                last_funding_rate: str,
+                mark_price: str,
+                next_funding_timestamp: int,
+                timestamp: int
+            }
+        """
+        return self.api.get(f"/v2/premium-index", params={"symbol": symbol})
+    
+    def get_historical_funding_rates(self, symbol: str, start_time: int, end_time: int):
+        """Get historical funding rates for a market
+
+        Args:
+            symbol (str): market symbol to get premium index for
+            start_time (int): start time in seconds
+            end_time (int): end time in seconds
+
+        Returns:
+            [
+                {
+                    funding_rate: str,
+                    apr: str,
+                    avg_premium_index: str,
+                    created_at: int
+                ]
+            ]
+        """
+        return self.api.get(f"/v2/funding-rate-history/{symbol}", params={"from": start_time, "to": end_time})
+    

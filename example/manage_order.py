@@ -10,7 +10,7 @@ from desk.info import Info  # noqa
 from desk import auth  # noqa
 from desk.enum import OrderSide, OrderType, TimeInForce, MarketSymbol  # noqa
 
-from constants import API_URL, RPC_URL, CHAIN_ID, ACCOUNT, PRIVATE_KEY, SUB_ACCOUNT_ID
+from constants import API_URL, RPC_URL, CHAIN_ID, ACCOUNT, PRIVATE_KEY, SUB_ACCOUNT_ID, CRM_URL
 
 
 def place_order(exchange: Exchange, price: str):
@@ -38,10 +38,10 @@ def cancel_order(exchange: Exchange, order_digest: str):
 
 def main():
     jwt = auth.Auth(private_key=PRIVATE_KEY, rpc_url=RPC_URL,
-                    chain_id=CHAIN_ID, account=ACCOUNT, sub_account_id=SUB_ACCOUNT_ID, api_url=API_URL)
-    exchange = Exchange(auth=jwt, api_url=API_URL)
+                    chain_id=CHAIN_ID, account=ACCOUNT, sub_account_id=SUB_ACCOUNT_ID, api_url=API_URL, crm_url=CRM_URL)
+    exchange = Exchange(auth=jwt, api_url=API_URL, crm_url=CRM_URL)
 
-    info = Info(api_url=API_URL, skip_ws=True)
+    info = Info(api_url=API_URL, crm_url=CRM_URL, skip_ws=True)
 
     mark_prices = info.get_mark_price()
 

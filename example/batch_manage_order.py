@@ -13,7 +13,7 @@ from desk.types import CreatePlaceOrderFn # noqa
 from desk.enum import OrderSide, OrderType, TimeInForce, MarketSymbol # noqa
 from desk.info import Info # noqa
 
-from constants import API_URL, RPC_URL, CHAIN_ID, ACCOUNT, PRIVATE_KEY, SUB_ACCOUNT_ID
+from constants import API_URL, RPC_URL, CHAIN_ID, ACCOUNT, PRIVATE_KEY, SUB_ACCOUNT_ID, CRM_URL
 
 
 def batch_place_order(exchange: Exchange, price_1: str, price_2: str, price_3: str):
@@ -58,7 +58,7 @@ def cancel_all_order(exchange: Exchange):
     print(resp)
 
 def manual_cancel_all_order(exchange: Exchange, symbol: MarketSymbol):
-    info = Info(api_url=API_URL, skip_ws=True)
+    info = Info(api_url=API_URL, crm_url=CRM_URL, skip_ws=True)
     orders =  info.get_subaccount_summary(ACCOUNT, SUB_ACCOUNT_ID)["open_orders"]
     to_cancel_orders = list(map(lambda x: {"orderDigest": x["order_digest"], "symbol": x["symbol"]}, filter(lambda x: x["symbol"] == symbol.value, orders)))
 
@@ -67,10 +67,10 @@ def manual_cancel_all_order(exchange: Exchange, symbol: MarketSymbol):
     return exchange.batch_cancel_order(to_cancel_orders)
 
 def main():
-    jwt = auth.Auth(api_url=API_URL, private_key=PRIVATE_KEY, rpc_url=RPC_URL,
+    jwt = auth.Auth(api_url=API_URL, crm_url=CRM_URL, private_key=PRIVATE_KEY, rpc_url=RPC_URL,
                     chain_id=CHAIN_ID, account=ACCOUNT, sub_account_id=SUB_ACCOUNT_ID)
-    exchange = Exchange(api_url=API_URL, auth=jwt)
-    info = Info(api_url=API_URL, skip_ws=True)
+    exchange = Exchange(api_url=API_URL, crm_url=CRM_URL, auth=jwt)
+    info = Info(api_url=API_URL, crm_url=CRM_URL, skip_ws=True)
 
     mark_prices = info.get_mark_price()
 
