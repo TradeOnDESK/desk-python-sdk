@@ -112,7 +112,7 @@ class Exchange:
             "amount": amount,
             "price": price,
             "side": side,
-            "symbol": symbol,
+            "symbol": convert_enum_to_string(symbol),
             "orderType": order_type,
             "reduceOnly": reduce_only,
             "triggerPrice": trigger_price,
@@ -168,7 +168,7 @@ class Exchange:
             client_order_id (str): client order id to cancel
         """
         order: CancelOrderFn = {
-            "symbol": symbol,
+            "symbol": convert_enum_to_string(symbol),
             "orderDigest": order_digest,
             "isConditionalOrder": is_conditional_order,
             "waitForReply": wait_for_reply,
@@ -208,7 +208,7 @@ class Exchange:
         }
         return payload
     
-    def cancel_all_orders(self, symbol: str = None, is_conditional_order: bool = False, wait_for_reply: bool = False) -> Any:
+    def cancel_all_orders(self, symbol: str | enum.MarketSymbol = None, is_conditional_order: bool = False, wait_for_reply: bool = False) -> Any:
         """Cancel all orders
 
         Args:
@@ -217,7 +217,7 @@ class Exchange:
             wait_for_reply (bool): should api wait for reply
         """
         order: CancelAllOrdersFn = {
-            "symbol": symbol,
+            "symbol": convert_enum_to_string(symbol),
             "isConditionalOrder": is_conditional_order,
             "waitForReply": wait_for_reply,
         }
