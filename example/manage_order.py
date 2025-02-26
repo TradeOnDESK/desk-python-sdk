@@ -10,17 +10,17 @@ from desk.info import Info  # noqa
 from desk import auth  # noqa
 from desk.enum import OrderSide, OrderType, TimeInForce, MarketSymbol  # noqa
 
-from constants import API_URL, RPC_URL, CHAIN_ID, ACCOUNT, PRIVATE_KEY, SUB_ACCOUNT_ID, CRM_URL
+from constants import NETWORK, RPC_URL, ACCOUNT, PRIVATE_KEY, SUB_ACCOUNT_ID
 
 
 def place_order(exchange: Exchange, price: str):
     resp = exchange.place_order(
         symbol=MarketSymbol.BTCUSD,
-        amount="0.001",
+        amount="0.003",
         price=price,
         side=OrderSide.LONG,
         order_type=OrderType.LIMIT,
-        time_in_force=TimeInForce.GTC,
+        time_in_force=TimeInForce.POST_ONLY,
         wait_for_reply=True
     )
     return resp
@@ -37,18 +37,17 @@ def cancel_order(exchange: Exchange, order_digest: str):
 
 
 def main():
-    jwt = auth.Auth(private_key=PRIVATE_KEY, rpc_url=RPC_URL,
-                    chain_id=CHAIN_ID, account=ACCOUNT, sub_account_id=SUB_ACCOUNT_ID, api_url=API_URL, crm_url=CRM_URL)
-    exchange = Exchange(auth=jwt, api_url=API_URL, crm_url=CRM_URL)
+    jwt = auth.Auth(network=NETWORK, private_key=PRIVATE_KEY, rpc_url=RPC_URL, account=ACCOUNT, sub_account_id=SUB_ACCOUNT_ID)
+    exchange = Exchange(network=NETWORK, auth=jwt)
 
-    info = Info(api_url=API_URL, crm_url=CRM_URL, skip_ws=True)
+    info = Info(network=NETWORK, skip_ws=True)
 
     mark_prices = info.get_mark_price()
 
     btc_price = float(mark_prices[0]['mark_price'])
     print("btc_price", btc_price)
 
-    place_price = str(btc_price - 5000)
+    place_price = f"{float(btc_price) * 0.99:.1f}"
     print("place_price", place_price)
     resp = place_order(exchange, place_price)
     print(resp)

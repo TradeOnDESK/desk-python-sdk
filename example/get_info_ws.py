@@ -5,13 +5,13 @@ import sys
 path_root = Path(__file__).parents[1]
 sys.path.append(str(path_root)+'/src')
 
-from constants import WS_URL, API_URL, CRM_URL
+from constants import NETWORK
 
 from desk.info import Info
 from desk.types import IndexPriceSubscription, MarkPriceSubscription, OrderbookSubscription, TradeSubscription
 
 def get_info_ws():
-    info = Info(ws_url=WS_URL, api_url=API_URL, crm_url=CRM_URL)
+    info = Info(network=NETWORK, skip_ws=False)
     subscription: IndexPriceSubscription = {"type": "indexPricesV2"}
     info.subscribe(subscription, lambda x: print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] indexprice: ", x['data'][0]))
 

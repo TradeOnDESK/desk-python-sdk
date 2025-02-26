@@ -6,10 +6,10 @@ path_root = Path(__file__).parents[1]
 sys.path.append(str(path_root)+'/src')
 
 from desk.info import Info
-from constants import API_URL, ACCOUNT, CRM_URL, SUB_ACCOUNT_ID
+from constants import ACCOUNT, SUB_ACCOUNT_ID, NETWORK
 
 def get_info():
-    info = Info(skip_ws=True, api_url=API_URL, crm_url=CRM_URL)
+    info = Info(network=NETWORK, skip_ws=True)
     data = info.get_subaccount_summary(ACCOUNT, SUB_ACCOUNT_ID)["open_orders"]
 
     for order in data:
