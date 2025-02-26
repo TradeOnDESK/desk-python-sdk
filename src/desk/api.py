@@ -2,15 +2,15 @@ import json
 import logging
 from typing import Any
 import requests as r
+from desk.constant.common import BASE_URLS, CRM_URLS
+from desk.types import NetworkOption
 from desk.utils.error import ClientError, ServerError
 
 
 class Api:
-    def __init__(self, api_url: str, crm_url: str, headers: dict = None):
-        if not api_url or not crm_url:
-            raise Exception("api_url and crm_url are required")
-        self.api_url = api_url
-        self.crm_url = crm_url
+    def __init__(self, network: NetworkOption, headers: dict = None):
+        self.api_url = BASE_URLS[network]
+        self.crm_url = CRM_URLS[network]
         self.session = r.Session()
         self.session.headers.update({"Content-Type": "application/json"})
         self._logger = logging.getLogger(__name__)

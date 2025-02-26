@@ -227,3 +227,6 @@ class SubAccountSummary(TypedDict):
     order_imr: str
     position_imr: str
     position_mmr: str
+
+NetworkOption = Literal["mainnet", "testnet"]
+ChainOption = Literal["base", "arbitrumSepolia"]
