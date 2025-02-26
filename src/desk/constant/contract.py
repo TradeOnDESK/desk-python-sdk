@@ -1,4 +1,10 @@
 CONTRACT_ADDRESS = {
+    # Arbitrum Sepolia
+    421614: {
+        "peripherals": {
+            "vault": "0x6e664f5025ee54704040a970d2bfa1ecbbc20fd4"
+        }
+    },
     # Base Mainnet
     8453: {
         "peripherals": {

@@ -5,12 +5,14 @@ from eth_account.messages import  encode_defunct
 
 from desk.api import Api
 from desk.utils.utils import generate_nonce, get_sub_account
+from desk.types import NetworkOption
+from desk.constant.common import CHAIN_ID
 
 class Auth(Api):
     """Authentication class for DESK. Is needed if want to use "Exchange" class.
 
     Args:
-        chain_id (int): chain id (8453 for base mainnet) other can be found on https://chainlist.org/
+        network (NetworkOption): network (mainnet, testnet)
         rpc_url (str): rpc url can be found on https://chainlist.org/
         account (str): evm account address
         sub_account_id (int): sub account id (max 255 but in web only display up to 5 (0 - 4))
@@ -18,11 +20,11 @@ class Auth(Api):
         jwt (str): jwt (if provided, skip generating)
 
     """
-    def __init__(self, api_url: str, crm_url: str, chain_id: int, rpc_url: str, account: str, sub_account_id: int, private_key: str, jwt: str = None):
-        if not chain_id or not rpc_url or sub_account_id == None or not private_key or not account or not api_url or not crm_url:
-                raise ValueError("api_url, crm_url, chain_id, rpc_url, sub_account_id, and private_key are required")
-        super().__init__(api_url, crm_url)
-        self.chain_id = chain_id
+    def __init__(self, network: NetworkOption, rpc_url: str, account: str, sub_account_id: int, private_key: str, jwt: str = None):
+        if not rpc_url or sub_account_id == None or not private_key or not account:
+            raise ValueError("rpc_url, sub_account_id, and private_key are required")
+        super().__init__(network)
+        self.chain_id = CHAIN_ID[network]
         self.rpc_url = rpc_url
         self.sub_account_id = str(sub_account_id)
 
@@ -87,7 +89,5 @@ Nonce: {self.nonce}"""
             "nonce": nonce,
             "signature": signature
         })
-
-        print(resp['access_token'])
 
         return resp["access_token"]

@@ -1,9 +1,9 @@
 from typing import Any, Callable
 from desk import utils
 from desk.api import Api
-from desk.types import SubAccountSummary, Subscription
+from desk.types import NetworkOption, SubAccountSummary, Subscription
 from desk.ws_manager import WebSocketManager
-from desk.constant.common import BROKER
+from desk.constant.common import BROKER, WSS_URLS
 
 
 class Info:
@@ -13,18 +13,13 @@ class Info:
         skip_ws (bool): skip opening websocket connection
     """
 
-    def __init__(self, api_url: str, crm_url: str, skip_ws: bool = False, ws_url: str = None):
+    def __init__(self, network: NetworkOption, skip_ws: bool = False):
         self.skip_ws = skip_ws
         if not skip_ws:
-            if not ws_url:
-                raise Exception("ws_url is required when skip_ws is False")
-            self.ws_manager = WebSocketManager(ws_url=ws_url)
+            self.ws_manager = WebSocketManager(ws_url=WSS_URLS[network])
             self.ws_manager.start()
         
-        if not api_url:
-            raise Exception("api_url is required")
-
-        self.api = Api(api_url=api_url, crm_url=crm_url)
+        self.api = Api(network=network)
 
     def subscribe(self, subscription: Subscription, callback: Callable[[Any], None]):
         """Subscribe to websocket
