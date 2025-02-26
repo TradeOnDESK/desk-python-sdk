@@ -52,6 +52,10 @@ class Exchange:
     def __create_place_order_payload(self, order: CreatePlaceOrderFn):
         nonce = generate_nonce()
 
+        order_type = convert_enum_to_string(order["orderType"])
+        side = convert_enum_to_string(order["side"])
+        symbol = convert_enum_to_string(order["symbol"])
+        
         payload: OrderRequest = {
             "nonce": str(nonce),
             "amount": order["amount"],
@@ -60,13 +64,13 @@ class Exchange:
             "broker_id": BROKER,
             "subaccount": self.auth.sub_account,
 
-            "order_type": convert_enum_to_string(order["orderType"]),
-            "side": convert_enum_to_string(order["side"]),
-            "symbol": convert_enum_to_string(order["symbol"]),
+            "order_type": order_type,
+            "side": side,
+            "symbol": symbol,
         }
 
         # TIF
-        if order["orderType"] == "Limit" or order["orderType"] == "Stop":
+        if order_type == "Limit" or order_type == "Stop":
             payload["time_in_force"] = convert_enum_to_string(order["timeInForce"])
 
         # Optional args
@@ -168,7 +172,7 @@ class Exchange:
             client_order_id (str): client order id to cancel
         """
         order: CancelOrderFn = {
-            "symbol": symbol,
+            "symbol": convert_enum_to_string(symbol),
             "orderDigest": order_digest,
             "isConditionalOrder": is_conditional_order,
             "waitForReply": wait_for_reply,
@@ -208,7 +212,7 @@ class Exchange:
         }
         return payload
     
-    def cancel_all_orders(self, symbol: str = None, is_conditional_order: bool = False, wait_for_reply: bool = False) -> Any:
+    def cancel_all_orders(self, symbol: str | enum.MarketSymbol = None, is_conditional_order: bool = False, wait_for_reply: bool = False) -> Any:
         """Cancel all orders
 
         Args:
@@ -217,7 +221,7 @@ class Exchange:
             wait_for_reply (bool): should api wait for reply
         """
         order: CancelAllOrdersFn = {
-            "symbol": symbol,
+            "symbol": convert_enum_to_string(symbol),
             "isConditionalOrder": is_conditional_order,
             "waitForReply": wait_for_reply,
         }

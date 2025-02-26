@@ -20,11 +20,19 @@ class WebSocketManager(threading.Thread):
         self.active_subscriptions: Dict[str, List[ActiveSubscription]] = defaultdict(list)
 
         self.ws = WebSocketApp(ws_url, on_message=self.on_message, on_open=self.on_open)
-
+        self.ping_sender = threading.Thread(target=self.send_ping)
         self.stop_event = threading.Event()
     
     def run(self):
         self.ws.run_forever(suppress_origin=True, reconnect=1)
+    
+    def send_ping(self):
+        while not self.stop_event.wait(50):
+            if not self.ws.keep_running:
+                break
+            logging.debug("Websocket sending ping")
+            self.ws.send(json.dumps({"method": "ping"}))
+        logging.debug("Websocket ping sender stopped")
 
     def stop(self):
         self.stop_event.set()
