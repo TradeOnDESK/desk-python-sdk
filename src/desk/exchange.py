@@ -78,6 +78,9 @@ class Exchange:
 
         if "clientOrderId" in order:
             payload["client_order_id"] = order["clientOrderId"]
+        
+        if "waitForReply" in order:
+            payload["wait_for_reply"] = order["waitForReply"]
 
         return payload
 
