@@ -13,11 +13,43 @@ A Python client for interacting with DESK Exchange API, featuring JWT authentica
 
 ## Installation
 
-```python
+```bash
 pip install desk-python-sdk
-# or
+```
+or
+```bash
 poetry add desk-python-sdk
 ```
+
+## List of functions
+
+### Info
+
+```python
+    subscribe
+    disconnect_websocket
+    get_market_info
+    get_mark_price
+    get_collaterals_info
+    get_last_trades
+    get_subaccount_summary
+    get_current_funding_rate
+    get_historical_funding_rates
+```
+
+
+### Exchange
+
+```python
+    place_order
+    batch_place_order
+    cancel_order
+    batch_cancel_order
+    cancel_all_orders
+    deposit_collateral
+    withdraw_collateral
+```
+
 
 ## Usage
 
@@ -30,21 +62,22 @@ from desk.info import Info
 
 # Initialize authentication
 auth = Auth(
-    api_url="https://api.happytrading.global/",
+    network="mainnet", # mainnet, testnet
     private_key="YOUR_PRIVATE_KEY",
     rpc_url="https://base-rpc.publicnode.com",
-    chain_id=8453,  # Base Mainnet
     account="YOUR_ACCOUNT_ADDRESS",
     sub_account_id=0
 )
 
 # Initialize exchange client
-exchange = Exchange(api_url="https://api.happytrading.global/", auth=auth)
+exchange = Exchange(
+    network="mainnet", # mainnet, testnet
+    auth=auth
+)
 
 # Initialize info client
 info = Info(
-    api_url="https://api.happytrading.global/",
-    ws_url="wss://ws-api.happytrading.global/ws",
+    network="mainnet", # mainnet, testnet
     skip_ws=False
 )
 ```
@@ -54,6 +87,9 @@ info = Info(
 ```python
 # Get account information
 account_summary = info.get_subaccount_summary(account="YOUR_ACCOUNT", sub_account_id=0)
+
+# Get funding rates info
+funding_rates = info.get_current_funding_rate("BTCUSD")
 ```
 
 ### Trading Operations
