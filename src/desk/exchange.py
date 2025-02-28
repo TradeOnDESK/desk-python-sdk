@@ -134,11 +134,13 @@ class Exchange:
 
     def __create_cancel_order_payload(self, order: CancelOrderFn) -> CancelOrderRequest:
         nonce = generate_nonce()
+        
+        if ("orderDigest" not in order or order["orderDigest"] is None) and ("clientOrderId" not in order or order["clientOrderId"] is None):
+            raise Exception("Either orderDigest or clientOrderId is required")
 
         payload: CancelOrderRequest = {
             "nonce": str(nonce),
             "subaccount": self.auth.sub_account,
-            "order_digest": order["orderDigest"],
             "symbol": convert_enum_to_string(order["symbol"]),
         }
 
@@ -151,13 +153,16 @@ class Exchange:
         if "clientOrderId" in order:
             payload["client_order_id"] = order["clientOrderId"]
 
+        if "orderDigest" in order:
+            payload["order_digest"] = order["orderDigest"]
+
         return payload
 
     def cancel_order(
         self,
         symbol: str | enum.MarketSymbol,
-        order_digest: str,
         is_conditional_order: bool,
+        order_digest: Optional[str] = None,
         wait_for_reply: bool = False,
         client_order_id: Optional[str] = None
     ) -> Any:
