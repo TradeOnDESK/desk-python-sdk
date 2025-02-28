@@ -161,7 +161,7 @@ CreatePlaceOrderFn = TypedDict("CreatePlaceOrderFn", {
 
 CancelOrderFn = TypedDict("CancelOrderFn", {
     "symbol": str,
-    "orderDigest": Hex,
+    "orderDigest": Optional[Hex],
     "isConditionalOrder": bool,
     "waitForReply": bool,
     "clientOrderId": Optional[str]
@@ -210,9 +210,9 @@ class OpenOrderInfo(TypedDict):
 
 class PositionInfo(TypedDict):
     symbol: str
-    side: OrderSideType
+    side: OrderSide
     entry_price: str
-    amount: str
+    quantity: str
 
 class SubAccountSummary(TypedDict):
     open_orders: List[OpenOrderInfo]
