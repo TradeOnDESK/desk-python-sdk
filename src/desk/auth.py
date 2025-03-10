@@ -64,7 +64,7 @@ Nonce: {self.nonce}"""
         pk = keys.PrivateKey(self.eth_signer.key)
         signed_data = Account.sign_message(encoded_msg, pk)
 
-        return signed_data.signature.hex()
+        return signed_data.signature.to_0x_hex()
     
     def __generate_jwt(self) -> str:
         jwt = self.__api_generate_jwt(self.account, self.sub_account_id, self.nonce, self.signature)
