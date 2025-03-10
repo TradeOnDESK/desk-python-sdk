@@ -318,7 +318,7 @@ class Exchange:
         })
 
         signed_txn = self.auth.eth_signer.sign_transaction(txn)
-        txn_hash = self.auth.eth_provider.eth.send_raw_transaction(signed_txn.rawTransaction)
+        txn_hash = self.auth.eth_provider.eth.send_raw_transaction(signed_txn.raw_transaction)
         if self.auth.eth_provider.eth.wait_for_transaction_receipt(txn_hash) == 0:
             raise Exception(f"Failed to send transaction {function} {txn_hash.hex()}")
         return txn_hash.hex()
