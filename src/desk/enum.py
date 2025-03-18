@@ -27,3 +27,10 @@ class MarketSymbol(enum.Enum):
 
 class CollateralSymbol(enum.Enum):
     USDC = "USDC"
+
+class Subscription(enum.Enum):
+    TRADE = "tradesV2"
+    ORDERBOOK = "l2BookV2"
+    MARK_PRICE = "markPricesV2"
+    ORDER_UPDATES = "orderUpdatesV2"
+    POSITION_UPDATES = "positionUpdatesV2"

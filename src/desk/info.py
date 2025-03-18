@@ -2,6 +2,7 @@ from typing import Any, Callable
 from desk import utils
 from desk.api import Api
 from desk.types import NetworkOption, SubAccountSummary, Subscription
+from desk.utils.utils import convert_enum_to_string
 from desk.ws_manager import WebSocketManager
 from desk.constant.common import BROKER, WSS_URLS
 
@@ -28,10 +29,23 @@ class Info:
             subscription (Subscription): topic to subscribe to
             callback (Callable[[Any], None]): callback function when message is received
         """
+        subscription["type"] = convert_enum_to_string(subscription['type'])
+        if 'symbol' in subscription:
+            subscription["symbol"] = convert_enum_to_string(subscription['symbol'])
+
         if self.skip_ws:
             raise Exception(
                 "Cannot subscribe to websocket when skip_ws is True")
-        self.ws_manager.subscribe(subscription, callback)
+        return self.ws_manager.subscribe(subscription, callback)
+    
+    def unsubscribe(self, subscription: Subscription, subscription_id: int):
+        """Unsubscribe from websocket
+
+        Args:
+            subscription (Subscription): topic to unsubscribe from
+            subscription_id (int): subscription id to unsubscribe from
+        """
+        return self.ws_manager.unsubscribe(subscription, subscription_id)
 
     def disconnect_websocket(self):
         if self.ws_manager is None:

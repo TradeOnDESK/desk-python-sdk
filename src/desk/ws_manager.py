@@ -75,3 +75,16 @@ class WebSocketManager(threading.Thread):
             identifier = subscription['type']
             self.active_subscriptions[identifier].append(ActiveSubscription(callback, subscription_id))
             self.ws.send(json.dumps({"method": "subscribe", "subscription": subscription}))
+        
+        return subscription_id
+
+    def unsubscribe(self, subscription: Subscription, subscription_id: int) -> bool:
+        if not self.ws_ready:
+            raise NotImplementedError("Can't unsubscribe before websocket connected")
+        identifier = subscription['type']
+        active_subscriptions = self.active_subscriptions[identifier]
+        new_active_subscriptions = [x for x in active_subscriptions if x.subscription_id != subscription_id]
+        if len(new_active_subscriptions) == 0:
+            self.ws.send(json.dumps({"method": "unsubscribe", "subscription": subscription}))
+        self.active_subscriptions[identifier] = new_active_subscriptions
+        return len(active_subscriptions) != len(new_active_subscriptions)
