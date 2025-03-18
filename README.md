@@ -173,17 +173,17 @@ exchange.cancel_all_orders(
 ### WebSocket Streams
 
 ```python
-from datetime import datetime
+from desk.enum import Subscription, MarketSymbol
 
 # Subscribe to mark prices
 info.subscribe(
-    {"type": "markPricesV2"},
+    {"type": Subscription.MARK_PRICE}
     lambda x: print("markprice: ", x['data'])
 )
 
 # Subscribe to orderbook
 info.subscribe(
-    {"type": "l2BookV2", "symbol": "BTCUSD"},
+    {"type": Subscription.ORDERBOOK, "symbol": MarketSymbol.BTCUSD},
     lambda x: print("orderbook: ", x['data'])
 )
 ```
