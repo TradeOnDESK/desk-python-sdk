@@ -228,3 +228,72 @@ class SubAccountSummary(TypedDict):
 
 NetworkOption = Literal["mainnet", "testnet"]
 ChainOption = Literal["base", "arbitrumSepolia"]
+
+class MarketInfo(TypedDict):
+    id: int
+    symbol: str
+    name: str
+    imf: str
+    mmf: str
+    maker_fee: str
+    taker_fee: str
+    price_feed_id: int
+    tick_size: str
+    lot_size: str
+    min_notional_size: str
+
+class MarkPrice(TypedDict):
+    symbol: str
+    mark_price: str
+    index_price: str
+
+class TokenAddress(TypedDict):
+    chain: str
+    chain_id: int
+    address: str
+
+class CollateralInfo(TypedDict):
+    asset: str
+    collateral_id: str
+    token_addresses: TokenAddress
+    decimals: int
+    collat_factor_bps: str
+    borrow_factor_bps: str
+    price_feed_id: int
+    discount_rate_bps: str
+    withdrawal_base_fee: str
+    priority: int
+
+class LastTrade(TypedDict):
+    id: int
+    symbol: str
+    price: str
+    quantity: str
+    is_buyer_maker: bool
+    time: int
+
+class CurrentFundingRate(TypedDict):
+    symbol: str
+    index_price: str
+    interest_rate: str
+    last_funding_rate: str
+    mark_price: str
+    next_funding_timestamp: int
+    timestamp: int
+
+class HistoricalFundingRate(TypedDict):
+    funding_rate: str
+    apr: str
+    avg_premium_index: str
+    created_at: int
+
+class TradeHistory(TypedDict):
+    symbol: str
+    side: str
+    price: str
+    filled: str
+    trading_fee: str
+    trading_fee_token: str
+    realized_pnl: str
+    is_taker: bool
+    traded_at: int

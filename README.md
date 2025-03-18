@@ -35,6 +35,7 @@ poetry add desk-python-sdk
     get_subaccount_summary
     get_current_funding_rate
     get_historical_funding_rates
+    get_trade_history
 ```
 
 

@@ -1,7 +1,7 @@
-from typing import Any, Callable
+from typing import Any, Callable, List
 from desk import utils
 from desk.api import Api
-from desk.types import NetworkOption, SubAccountSummary, Subscription
+from desk.types import CollateralInfo, CurrentFundingRate, HistoricalFundingRate, LastTrade, MarkPrice, MarketInfo, NetworkOption, SubAccountSummary, Subscription, TradeHistory
 from desk.utils.utils import convert_enum_to_string
 from desk.ws_manager import WebSocketManager
 from desk.constant.common import BROKER, WSS_URLS
@@ -53,7 +53,7 @@ class Info:
         else:
             self.ws_manager.stop()
 
-    def get_market_info(self):
+    def get_market_info(self) -> List[MarketInfo]:
         """Get market info for current broker
 
         Returns:
@@ -75,7 +75,7 @@ class Info:
         """
         return self.api.get(f"/v2/market-info/brokers/{BROKER}")
 
-    def get_mark_price(self):
+    def get_mark_price(self) -> List[MarkPrice]:
         """Get mark price for all active markets
 
         Returns:
@@ -89,7 +89,7 @@ class Info:
         """
         return self.api.get("/v2/mark-prices")
 
-    def get_collaterals_info(self):
+    def get_collaterals_info(self) -> List[CollateralInfo]:
         """Get collateral info
 
         Returns:
@@ -114,7 +114,7 @@ class Info:
         """
         return self.api.get("/v2/collaterals")
 
-    def get_last_trades(self, symbol: str):
+    def get_last_trades(self, symbol: str) -> List[LastTrade]:
         """Get last trades for a market
 
         Args:
@@ -182,7 +182,7 @@ class Info:
         sub_account = str(utils.get_sub_account(account, sub_account_id))
         return self.api.get(f"/v2/subaccount-summary/{sub_account}")
     
-    def get_current_funding_rate(self, symbol: str):
+    def get_current_funding_rate(self, symbol: str) -> CurrentFundingRate:
         """Get funding rates for a market
 
         Args:
@@ -201,7 +201,7 @@ class Info:
         """
         return self.api.get(f"/v2/premium-index", params={"symbol": symbol})
     
-    def get_historical_funding_rates(self, symbol: str, start_time: int, end_time: int):
+    def get_historical_funding_rates(self, symbol: str, start_time: int, end_time: int) -> List[HistoricalFundingRate]:
         """Get historical funding rates for a market
 
         Args:
@@ -221,3 +221,31 @@ class Info:
         """
         return self.api.get(f"/v2/funding-rate-history/{symbol}", params={"from": start_time, "to": end_time})
     
+    def get_trade_history(self, account: str, sub_account_id: int, start_time: int, end_time: int, page: int = 1) -> List[TradeHistory]:
+        """Get trade history for a market
+
+        Args:
+            start_time (int): start time in seconds
+            end_time (int): end time in seconds
+            page (int): (optional) page number
+        Returns:
+            [
+                {
+                    symbol: str,
+                    side: str,
+                    price: str,
+                    filled: str,
+                    trading_fee: str,
+                    trading_fee_token: str,
+                    realized_pnl: str,
+                    is_taker: bool,
+                    traded_at: int
+                }
+            ]
+        """
+        if page < 1:
+            raise ValueError("Page must be greater than 0")
+        if page > 10:
+            raise ValueError("Page must be less than 10")
+        sub_account = str(utils.get_sub_account(account, sub_account_id))
+        return self.api.get(f"/v2/trade-history/{sub_account}", params={"from": start_time, "to": end_time, "page": page})
