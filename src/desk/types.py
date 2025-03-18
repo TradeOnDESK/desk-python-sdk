@@ -8,8 +8,6 @@ OrderbookSubscription = TypedDict("OrderbookSubscription", {
                                   "type": Literal["l2BookV2"], "symbol": str})
 MarkPriceSubscription = TypedDict("MarkPriceSubscription", {
                                   "type": Literal["markPricesV2"]})
-IndexPriceSubscription = TypedDict("IndexPriceSubscription", {
-                                   "type": Literal["indexPricesV2"]})
 OrderUpdatesSubscription = TypedDict("OrderUpdatesSubscription", {
     "type": Literal["orderUpdatesV2"], "subaccount": str
 })
@@ -18,7 +16,7 @@ PositionUpdatesSubscription = TypedDict("PositionUpdatesSubscription", {
 })
 
 Subscription = Union[TradeSubscription, OrderbookSubscription,
-                     MarkPriceSubscription, IndexPriceSubscription,
+                     MarkPriceSubscription,
                      OrderUpdatesSubscription, PositionUpdatesSubscription]
 
 StreamMessage = TypedDict("StreamMessage", {
