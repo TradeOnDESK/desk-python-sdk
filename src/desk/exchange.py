@@ -1,15 +1,15 @@
 import enum
 from typing import Any, List, Optional
+import requests
 from web3 import Web3
 from desk.api import Api
 from desk.auth import Auth
 from desk.types import CancelAllOrdersFn, CancelAllOrdersRequest, CancelOrderFn, CancelOrderRequest, CreatePlaceOrderFn, NetworkOption, OrderRequest, OrderSide, OrderType, PlaceOrderResponse, TimeInForce
 import desk.enum as enum
 from desk.constant.contract import VAULT_CONTRACT_ABI, ERC20_ABI_PATH
-from desk.constant.common import BROKER
+from desk.constant.common import BROKER, BASE_URLS
 from desk.utils import (
     load_contract, 
-    get_contract_address, 
     map_token_profile,
     generate_nonce
 )
@@ -24,6 +24,7 @@ class Exchange:
     Needed "Auth" object to be initialized
     """
     def __init__(self, network: NetworkOption, auth: Auth = None):
+        self.network = network
         self.jwt = auth.jwt
         self.auth = auth
 
@@ -34,7 +35,7 @@ class Exchange:
                        "Authorization": f"Bearer {self.jwt}"})
 
         
-        self.contract_address = get_contract_address(self.auth.chain_id)
+        self.contract_address = self.__get_contract_address()
 
         self.vault_contract = load_contract(
             self.auth.eth_provider, self.contract_address["peripherals"]["vault"], VAULT_CONTRACT_ABI)
@@ -44,6 +45,10 @@ class Exchange:
     def __get_token_profile(self):
         resp = self.api.get("/v2/collaterals")
         return map_token_profile(resp, self.auth.chain_id)
+    
+    def __get_contract_address(self):
+        resp = requests.get(f"{BASE_URLS[self.network]}/addresses-config?chain_id={self.auth.chain_id}")
+        return resp.json()
 
     def __create_place_order_payload(self, order: CreatePlaceOrderFn):
         nonce = generate_nonce()
