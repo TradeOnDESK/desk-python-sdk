@@ -21,3 +21,9 @@ class OrderSide(enum.Enum):
 class MarketSymbol(enum.Enum):
     BTCUSD = "BTCUSD"
     ETHUSD = "ETHUSD"
+    SOLUSD = "SOLUSD"
+    VIRTUALUSD = "VIRTUALUSD"
+    KAITOUSD = "KAITOUSD"
+
+class CollateralSymbol(enum.Enum):
+    USDC = "USDC"

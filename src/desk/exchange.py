@@ -242,7 +242,8 @@ class Exchange:
         Returns:
             transaction hash: str   
         """
-        collateral = self.token_profile[asset]
+        asset_str = convert_enum_to_string(asset)
+        collateral = self.token_profile[asset_str]
         collateral_address = collateral["address"]
 
         vault_address = Web3.to_checksum_address(
@@ -276,7 +277,7 @@ class Exchange:
         return self.__send_transaction(self.vault_contract.functions.deposit(checksum_collateral_address, self.auth.sub_account, amount_wei))
 
 
-    def withdraw_collateral(self, asset: str, amount: float):
+    def withdraw_collateral(self, asset: str | enum.CollateralSymbol, amount: float):
         """Withdraw collateral
 
         Args:
@@ -286,7 +287,8 @@ class Exchange:
         Returns:
             transaction hash: str
         """
-        collateral = self.token_profile[asset]
+        asset_str = convert_enum_to_string(asset)
+        collateral = self.token_profile[asset_str]
         collateral_address = collateral["address"]
 
         if not collateral_address:
@@ -297,7 +299,7 @@ class Exchange:
         
         is_withdrawable = self.vault_contract.functions.withdrawableTokens(checksum_collateral_address).call()
         if not is_withdrawable:
-            raise Exception(f"Collateral {asset} is not withdrawable")
+            raise Exception(f"Collateral {asset_str} is not withdrawable")
 
         token_instance = load_contract(
             self.auth.eth_provider, checksum_collateral_address, ERC20_ABI_PATH)
