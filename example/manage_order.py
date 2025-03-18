@@ -47,7 +47,7 @@ def main():
     btc_price = float(mark_prices[0]['mark_price'])
     print("btc_price", btc_price)
 
-    place_price = f"{float(btc_price) * 0.99:.1f}"
+    place_price = f"{float(btc_price) * 0.9:.1f}"
     print("place_price", place_price)
     resp = place_order(exchange, place_price)
     print(resp)

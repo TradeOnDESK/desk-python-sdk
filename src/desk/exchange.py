@@ -1,4 +1,3 @@
-import enum
 from typing import Any, List, Optional
 import requests
 from web3 import Web3
@@ -248,6 +247,9 @@ class Exchange:
             transaction hash: str   
         """
         asset_str = convert_enum_to_string(asset)
+        if asset_str not in self.token_profile:
+            raise Exception(f"Collateral '{asset_str}' not recognized in token profile.")
+
         collateral = self.token_profile[asset_str]
         collateral_address = collateral["address"]
 
@@ -293,6 +295,9 @@ class Exchange:
             transaction hash: str
         """
         asset_str = convert_enum_to_string(asset)
+        if asset_str not in self.token_profile:
+            raise Exception(f"Collateral '{asset_str}' not recognized in token profile.")
+        
         collateral = self.token_profile[asset_str]
         collateral_address = collateral["address"]
 
