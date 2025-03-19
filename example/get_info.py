@@ -25,6 +25,7 @@ def get_info():
     print(info.get_collaterals_info())
     print(info.get_current_funding_rate("BTCUSD"))
     print(info.get_historical_funding_rates("BTCUSD", 1739872344, int(datetime.now().timestamp())))
+    print(info.get_trade_history(ACCOUNT, SUB_ACCOUNT_ID, 1739872344, int(datetime.now().timestamp())))
 
 if __name__ == "__main__":
     get_info()
