@@ -12,7 +12,13 @@ class Api:
         self.api_url = BASE_URLS[network]
         self.crm_url = CRM_URLS[network]
         self.session = r.Session()
-        self.session.headers.update({"Content-Type": "application/json"})
+        self.session.headers.update({
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+            "Content-Type": "application/json",
+            "User-Agent": "python-requests/2.32.3",
+        })
         self._logger = logging.getLogger(__name__)
 
         if headers:
