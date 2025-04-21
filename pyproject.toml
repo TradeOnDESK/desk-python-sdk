@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "desk-python-sdk"
-version = "1.0.2"
+version = "1.1.0"
 description = "DESK Python SDK"
 authors = ["chenciao8 <chenciao8@gmail.com>"]
 license = "MIT"
@@ -8,12 +8,8 @@ readme = "README.md"
 homepage = "https://github.com/TradeOnDESK/desk-python-sdk"
 repository = "https://github.com/TradeOnDESK/desk-python-sdk"
 documentation = "https://github.com/TradeOnDESK/desk-python-sdk"
-packages = [
-    { include = "desk", from = "src" },
-]
-classifiers = [
-    "Development Status :: 4 - Beta",
-]
+packages = [{ include = "desk", from = "src" }]
+classifiers = ["Development Status :: 4 - Beta"]
 
 [tool.poetry.urls]
 Changelog = "https://github.com/TradeOnDESK/desk-python-sdk/releases"
@@ -32,7 +28,7 @@ docutils = "^0.21.2"
 python-dotenv = "^1.0.1"
 Pygments = ">=2.10.0"
 black = ">=21.10b0"
-coverage = {extras = ["toml"], version = ">=6.2"}
+coverage = { extras = ["toml"], version = ">=6.2" }
 darglint = ">=1.8.1"
 flake8 = ">=4.0.1"
 flake8-bandit = ">=2.1.2"
@@ -52,8 +48,8 @@ sphinx = "^7.4.7"
 sphinx-autobuild = ">=2021.3.14"
 sphinx-click = "^6.0.0"
 typeguard = ">=2.13.3"
-xdoctest = {extras = ["colors"], version = ">=0.15.10"}
-myst-parser = {version = ">=0.16.1"}
+xdoctest = { extras = ["colors"], version = ">=0.15.10" }
+myst-parser = { version = ">=0.16.1" }
 
 [tool.poetry.scripts]
 desk-python-sdk = "desk.__main__:main"
