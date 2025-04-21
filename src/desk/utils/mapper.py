@@ -4,6 +4,7 @@ from desk.constant.contract import CONTRACT_ADDRESS
 def get_contract_address(chain_id: int):
     return CONTRACT_ADDRESS[int(chain_id)]
 
+
 def map_token_profile(data: dict, chain_id: int):
     token_profile = {}
     for asset in data:
@@ -23,12 +24,16 @@ def map_token_profile(data: dict, chain_id: int):
             "priority": asset["priority"]
         }
 
+        address_found = False
         for token in asset["token_addresses"]:
             if int(token["chain_id"]) == int(chain_id):
                 each_asset["address"] = token["address"]
+                address_found = True
                 break
-        # via token name
-        token_profile[asset["asset"]] = each_asset
-        # via token address
-        token_profile[each_asset["address"]] = each_asset
+
+        if address_found:
+            # via token name
+            token_profile[asset["asset"]] = each_asset
+            # via token address
+            token_profile[each_asset["address"]] = each_asset
     return token_profile
