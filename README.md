@@ -33,6 +33,11 @@ List of all supported chain.
 - Arbitrum Sepolia (`testnet`, `testnetArbitrum`, `arbitrumSepolia`)
 - BNB Smart Chain Testnet (`testnetBsc`, `bscTestnet`)
 
+## Supported Tokens
+- `USDC`
+- `cbBTC` (base)
+- `WETH` (base)
+
 ## List of functions
 
 ### Info

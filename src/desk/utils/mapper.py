@@ -1,3 +1,4 @@
+from web3 import Web3
 from desk.constant.contract import CONTRACT_ADDRESS
 
 
@@ -34,6 +35,10 @@ def map_token_profile(data: dict, chain_id: int):
         if address_found:
             # via token name
             token_profile[asset["asset"]] = each_asset
+            token_profile[asset["asset"].lower()] = each_asset
             # via token address
             token_profile[each_asset["address"]] = each_asset
+            token_profile[each_asset["address"].lower()] = each_asset
+            token_profile[Web3.to_checksum_address(
+                each_asset["address"])] = each_asset
     return token_profile
