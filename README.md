@@ -84,13 +84,13 @@ auth = Auth(
 
 # Initialize exchange client
 exchange = Exchange(
-    network="mainnet", # mainnet, testnet
+    network="mainnet", # mainnet, mainnetArbitrum, testnetBsc
     auth=auth
 )
 
 # Initialize info client
 info = Info(
-    network="mainnet", # mainnet, testnet
+    network="mainnet", # mainnet, mainnetArbitrum, testnetBsc
     skip_ws=False
 )
 ```
