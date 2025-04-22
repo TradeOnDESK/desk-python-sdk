@@ -231,8 +231,16 @@ class SubAccountSummary(TypedDict):
     position_mmr: str
 
 
-NetworkOption = Literal["mainnet", "testnet", "mainnetArbitrum", "testnetArbitrum",
-                        "mainnetBsc", "testnetBsc", "base", "arbitrum", "bsc", "baseSepolia", "arbitrumSepolia"]
+NetworkOption = Literal[
+   "mainnet", "mainnetBase",
+   "testnet", "testnetBase",
+   "mainnetArbitrum", "testnetArbitrum",
+   "mainnetBsc", "testnetBsc", "bscTestnet",
+   "base", "baseSepolia",
+   "arbitrum", "arbitrumSepolia",
+   "bsc"
+]
+
 ChainOption = Literal["base", "arbitrumSepolia"]
 
 
