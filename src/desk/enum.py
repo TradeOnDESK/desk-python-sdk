@@ -1,5 +1,6 @@
 import enum
 
+
 class OrderType(enum.Enum):
     LIMIT = "Limit"
     MARKET = "Market"
@@ -8,15 +9,18 @@ class OrderType(enum.Enum):
     TAKE_PROFIT = "TakeProfit"
     TAKE_PROFIT_MARKET = "TakeProfitMarket"
 
+
 class TimeInForce(enum.Enum):
     GTC = "GTC"
     FOK = "FOK"
     IOC = "IOC"
     POST_ONLY = "PostOnly"
 
+
 class OrderSide(enum.Enum):
     LONG = "Long"
     SHORT = "Short"
+
 
 class MarketSymbol(enum.Enum):
     BTCUSD = "BTCUSD"
@@ -25,8 +29,16 @@ class MarketSymbol(enum.Enum):
     VIRTUALUSD = "VIRTUALUSD"
     KAITOUSD = "KAITOUSD"
 
+
 class CollateralSymbol(enum.Enum):
     USDC = "USDC"
+    WETH = "WETH"
+    WEETH = "weETH"
+    CREDIT = "CREDIT"
+    CBTC = "cbBTC"
+    GM_BTC = "GM-BTC"
+    GM_ETH = "GM-ETH"
+
 
 class Subscription(enum.Enum):
     TRADE = "tradesV2"

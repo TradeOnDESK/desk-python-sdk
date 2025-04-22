@@ -8,12 +8,11 @@ import desk.enum as enum
 from desk.constant.contract import VAULT_CONTRACT_ABI, ERC20_ABI_PATH
 from desk.constant.common import BROKER, BASE_URLS
 from desk.utils import (
-    load_contract, 
+    load_contract,
     map_token_profile,
     generate_nonce
 )
 from desk.utils.utils import convert_enum_to_string
-
 
 
 class Exchange:
@@ -22,6 +21,7 @@ class Exchange:
 
     Needed "Auth" object to be initialized
     """
+
     def __init__(self, network: NetworkOption, auth: Auth = None):
         self.network = network
         self.jwt = auth.jwt
@@ -33,7 +33,6 @@ class Exchange:
         self.api = Api(network=network, headers={
                        "Authorization": f"Bearer {self.jwt}"})
 
-        
         self.contract_address = self.__get_contract_address()
 
         self.vault_contract = load_contract(
@@ -44,9 +43,10 @@ class Exchange:
     def __get_token_profile(self):
         resp = self.api.get("/v2/collaterals")
         return map_token_profile(resp, self.auth.chain_id)
-    
+
     def __get_contract_address(self):
-        resp = requests.get(f"{BASE_URLS[self.network]}/addresses-config?chain_id={self.auth.chain_id}")
+        resp = requests.get(
+            f"{BASE_URLS[self.network]}/addresses-config?chain_id={self.auth.chain_id}")
         return resp.json()
 
     def __create_place_order_payload(self, order: CreatePlaceOrderFn):
@@ -55,7 +55,7 @@ class Exchange:
         order_type = convert_enum_to_string(order["orderType"])
         side = convert_enum_to_string(order["side"])
         symbol = convert_enum_to_string(order["symbol"])
-        
+
         payload: OrderRequest = {
             "nonce": str(nonce),
             "amount": order["amount"],
@@ -71,7 +71,8 @@ class Exchange:
 
         # TIF
         if order_type == "Limit" or order_type == "Stop":
-            payload["time_in_force"] = convert_enum_to_string(order["timeInForce"])
+            payload["time_in_force"] = convert_enum_to_string(
+                order["timeInForce"])
 
         # Optional args
         if "reduceOnly" in order:
@@ -82,7 +83,7 @@ class Exchange:
 
         if "clientOrderId" in order:
             payload["client_order_id"] = order["clientOrderId"]
-        
+
         if "waitForReply" in order:
             payload["wait_for_reply"] = order["waitForReply"]
 
@@ -129,16 +130,17 @@ class Exchange:
         }
         payload = self.__create_place_order_payload(order)
         return self.api.post("/v2/place-order", payload=payload)
-    
+
     def batch_place_order(self, orders: List[CreatePlaceOrderFn]) -> Any:
         if len(orders) == 0:
             raise Exception("Orders is empty")
-        payloads = [self.__create_place_order_payload(order) for order in orders]
+        payloads = [self.__create_place_order_payload(
+            order) for order in orders]
         return self.api.post("/v2/batch-place-order", payload=payloads)
 
     def __create_cancel_order_payload(self, order: CancelOrderFn) -> CancelOrderRequest:
         nonce = generate_nonce()
-        
+
         if ("orderDigest" not in order or order["orderDigest"] is None) and ("clientOrderId" not in order or order["clientOrderId"] is None):
             raise Exception("Either orderDigest or clientOrderId is required")
 
@@ -188,7 +190,7 @@ class Exchange:
         }
         payload = self.__create_cancel_order_payload(order)
         return self.api.post("/v2/cancel-order", payload=payload)
-    
+
     def batch_cancel_order(self, orders: List[CancelOrderFn]) -> Any:
         """Batch cancel order
 
@@ -205,9 +207,10 @@ class Exchange:
         """
         if len(orders) == 0:
             raise Exception("Orders is empty")
-        payloads = [self.__create_cancel_order_payload(order) for order in orders]
+        payloads = [self.__create_cancel_order_payload(
+            order) for order in orders]
         return self.api.post("/v2/batch-cancel-order", payload=payloads)
-    
+
     def __create_cancel_all_orders_payload(self, order: CancelAllOrdersFn) -> CancelAllOrdersRequest:
         nonce = generate_nonce()
 
@@ -219,7 +222,7 @@ class Exchange:
             "wait_for_reply": order["waitForReply"],
         }
         return payload
-    
+
     def cancel_all_orders(self, symbol: str | enum.MarketSymbol = None, is_conditional_order: bool = False, wait_for_reply: bool = False) -> Any:
         """Cancel all orders
 
@@ -248,9 +251,10 @@ class Exchange:
         """
         asset_str = convert_enum_to_string(asset)
         if asset_str not in self.token_profile:
-            raise Exception(f"Collateral '{asset_str}' not recognized in token profile.")
+            raise Exception(
+                f"Collateral '{asset_str}' not recognized in token profile. Does this token exist on this network?")
 
-        collateral = self.token_profile[asset_str]
+        collateral = self.token_profile[asset_str.lower()]
         collateral_address = collateral["address"]
 
         vault_address = Web3.to_checksum_address(
@@ -261,17 +265,19 @@ class Exchange:
 
         checksum_collateral_address = Web3.to_checksum_address(
             collateral_address)
-        
+
         token_instance = load_contract(
             self.auth.eth_provider, checksum_collateral_address, ERC20_ABI_PATH)
-        
+
         token_decimal = token_instance.functions.decimals().call()
         amount_wei = int(
             amount * 10 ** token_decimal)
-        
-        min_deposit = self.vault_contract.functions.minDeposits(checksum_collateral_address).call()
+
+        min_deposit = self.vault_contract.functions.minDeposits(
+            checksum_collateral_address).call()
         if amount_wei < min_deposit:
-            raise Exception(f"Amount is less than minimum deposit {float(min_deposit) / 10 ** token_decimal} {collateral['asset']}")
+            raise Exception(
+                f"Amount is less than minimum deposit {float(min_deposit) / 10 ** token_decimal} {collateral['asset']}")
 
         signer_address = Web3.to_checksum_address(self.auth.eth_signer.address)
 
@@ -279,10 +285,10 @@ class Exchange:
             signer_address, vault_address).call()
 
         if allowance < amount_wei:
-            self.__send_transaction(token_instance.functions.approve(vault_address, amount_wei))
-            
-        return self.__send_transaction(self.vault_contract.functions.deposit(checksum_collateral_address, self.auth.sub_account, amount_wei))
+            self.__send_transaction(
+                token_instance.functions.approve(vault_address, amount_wei))
 
+        return self.__send_transaction(self.vault_contract.functions.deposit(checksum_collateral_address, self.auth.sub_account, amount_wei))
 
     def withdraw_collateral(self, asset: str | enum.CollateralSymbol, amount: float):
         """Withdraw collateral
@@ -296,30 +302,31 @@ class Exchange:
         """
         asset_str = convert_enum_to_string(asset)
         if asset_str not in self.token_profile:
-            raise Exception(f"Collateral '{asset_str}' not recognized in token profile.")
-        
+            raise Exception(
+                f"Collateral '{asset_str}' not recognized in token profile.")
+
         collateral = self.token_profile[asset_str]
         collateral_address = collateral["address"]
 
         if not collateral_address:
             raise Exception("Collateral address not found")
-        
+
         checksum_collateral_address = Web3.to_checksum_address(
             collateral_address)
-        
-        is_withdrawable = self.vault_contract.functions.withdrawableTokens(checksum_collateral_address).call()
+
+        is_withdrawable = self.vault_contract.functions.withdrawableTokens(
+            checksum_collateral_address).call()
         if not is_withdrawable:
             raise Exception(f"Collateral {asset_str} is not withdrawable")
 
         token_instance = load_contract(
             self.auth.eth_provider, checksum_collateral_address, ERC20_ABI_PATH)
-        
+
         token_decimal = token_instance.functions.decimals().call()
         amount_wei = int(
             amount * 10 ** token_decimal)
-        
+
         return self.__send_transaction(self.vault_contract.functions.withdraw(checksum_collateral_address, self.auth.sub_account, amount_wei))
-    
 
     def __send_transaction(self, function):
         txn = function.build_transaction({
@@ -330,7 +337,9 @@ class Exchange:
         })
 
         signed_txn = self.auth.eth_signer.sign_transaction(txn)
-        txn_hash = self.auth.eth_provider.eth.send_raw_transaction(signed_txn.raw_transaction)
+        txn_hash = self.auth.eth_provider.eth.send_raw_transaction(
+            signed_txn.raw_transaction)
         if self.auth.eth_provider.eth.wait_for_transaction_receipt(txn_hash) == 0:
-            raise Exception(f"Failed to send transaction {function} {txn_hash.hex()}")
+            raise Exception(
+                f"Failed to send transaction {function} {txn_hash.hex()}")
         return txn_hash.hex()

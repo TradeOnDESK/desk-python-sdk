@@ -107,7 +107,7 @@ OrderType = Literal[
 Hex = str  # Assuming Hex is just a string type in Python
 
 TimeInForce = Literal["GTC", "FOK", "IOC", "PostOnly"]
-OrderSide = Literal["Long", "Short"] 
+OrderSide = Literal["Long", "Short"]
 
 OrderRequest = TypedDict("OrderRequest", {
     "symbol": str,
@@ -193,10 +193,12 @@ class PlaceOrderResponse(TypedDict):
 
 OrderSideType = Literal["BUY", "SELL"]
 
+
 class CollateralInfo(TypedDict):
     asset: str
     collateral_id: str
     amount: str
+
 
 class OpenOrderInfo(TypedDict):
     order_digest: str
@@ -206,11 +208,13 @@ class OpenOrderInfo(TypedDict):
     original_quantity: str
     remaining_quantity: str
 
+
 class PositionInfo(TypedDict):
     symbol: str
     side: OrderSide
     entry_price: str
     quantity: str
+
 
 class SubAccountSummary(TypedDict):
     open_orders: List[OpenOrderInfo]
@@ -226,8 +230,19 @@ class SubAccountSummary(TypedDict):
     position_imr: str
     position_mmr: str
 
-NetworkOption = Literal["mainnet", "testnet"]
+
+NetworkOption = Literal[
+   "mainnet", "mainnetBase",
+   "testnet", "testnetBase",
+   "mainnetArbitrum", "testnetArbitrum",
+   "mainnetBsc", "testnetBsc", "bscTestnet",
+   "base", "baseSepolia",
+   "arbitrum", "arbitrumSepolia",
+   "bsc"
+]
+
 ChainOption = Literal["base", "arbitrumSepolia"]
+
 
 class MarketInfo(TypedDict):
     id: int
@@ -242,15 +257,18 @@ class MarketInfo(TypedDict):
     lot_size: str
     min_notional_size: str
 
+
 class MarkPrice(TypedDict):
     symbol: str
     mark_price: str
     index_price: str
 
+
 class TokenAddress(TypedDict):
     chain: str
     chain_id: int
     address: str
+
 
 class CollateralInfo(TypedDict):
     asset: str
@@ -264,6 +282,7 @@ class CollateralInfo(TypedDict):
     withdrawal_base_fee: str
     priority: int
 
+
 class LastTrade(TypedDict):
     id: int
     symbol: str
@@ -271,6 +290,7 @@ class LastTrade(TypedDict):
     quantity: str
     is_buyer_maker: bool
     time: int
+
 
 class CurrentFundingRate(TypedDict):
     symbol: str
@@ -281,11 +301,13 @@ class CurrentFundingRate(TypedDict):
     next_funding_timestamp: int
     timestamp: int
 
+
 class HistoricalFundingRate(TypedDict):
     funding_rate: str
     apr: str
     avg_premium_index: str
     created_at: int
+
 
 class TradeHistory(TypedDict):
     symbol: str

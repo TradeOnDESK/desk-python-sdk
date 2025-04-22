@@ -10,6 +10,7 @@ A Python client for interacting with DESK Exchange API, featuring JWT authentica
 - Type-safe API interactions
 - Real-time WebSocket support
 - Comprehensive error handling
+- Multi-chain support
 
 ## Installation
 
@@ -20,6 +21,22 @@ or
 ```bash
 poetry add desk-python-sdk
 ```
+
+## Supported Chain
+List of all supported chain.
+### Mainnet
+- Base (`mainnet`, `mainnetBase`, `base`)
+- Arbitrum One (`mainnetArbitrum`, `arbitrum`)
+- BNB Smart Chain (`mainnetBsc`, `bsc`)
+### Testnet
+- Base Sepolia (`testnetBase`, `baseSepolia`)
+- Arbitrum Sepolia (`testnet`, `testnetArbitrum`, `arbitrumSepolia`)
+- BNB Smart Chain Testnet (`testnetBsc`, `bscTestnet`)
+
+## Supported Tokens
+- `USDC`
+- `cbBTC` (base)
+- `WETH` (base)
 
 ## List of functions
 
@@ -72,13 +89,13 @@ auth = Auth(
 
 # Initialize exchange client
 exchange = Exchange(
-    network="mainnet", # mainnet, testnet
+    network="mainnet", # mainnet, mainnetArbitrum, testnetBsc
     auth=auth
 )
 
 # Initialize info client
 info = Info(
-    network="mainnet", # mainnet, testnet
+    network="mainnet", # mainnet, mainnetArbitrum, testnetBsc
     skip_ws=False
 )
 ```
