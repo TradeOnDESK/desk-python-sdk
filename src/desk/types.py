@@ -232,16 +232,16 @@ class SubAccountSummary(TypedDict):
 
 
 NetworkOption = Literal[
-   "mainnet", "mainnetBase",
-   "testnet", "testnetBase",
-   "mainnetArbitrum", "testnetArbitrum",
-   "mainnetBsc", "testnetBsc", "bscTestnet",
-   "base", "baseSepolia",
-   "arbitrum", "arbitrumSepolia",
+   "mainnet", 
+   "mainnetBase",
+   "mainnetArbitrum",
+   "mainnetBsc",
+   "base",
+   "arbitrum",
    "bsc"
 ]
 
-ChainOption = Literal["base", "arbitrumSepolia"]
+ChainOption = Literal["base"]
 
 
 class MarketInfo(TypedDict):

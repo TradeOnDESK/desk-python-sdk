@@ -12,7 +12,7 @@ class Auth(Api):
     """Authentication class for DESK. Is needed if want to use "Exchange" class.
 
     Args:
-        network (NetworkOption): network (mainnet, testnet)
+        network (NetworkOption): network (mainnet)
         rpc_url (str): rpc url can be found on https://chainlist.org/
         account (str): evm account address
         sub_account_id (int): sub account id (max 255 but in web only display up to 5 (0 - 4))
