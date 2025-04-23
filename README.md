@@ -17,23 +17,25 @@ A Python client for interacting with DESK Exchange API, featuring JWT authentica
 ```bash
 pip install desk-python-sdk
 ```
+
 or
+
 ```bash
 poetry add desk-python-sdk
 ```
 
 ## Supported Chain
+
 List of all supported chain.
+
 ### Mainnet
+
 - Base (`mainnet`, `mainnetBase`, `base`)
 - Arbitrum One (`mainnetArbitrum`, `arbitrum`)
 - BNB Smart Chain (`mainnetBsc`, `bsc`)
-### Testnet
-- Base Sepolia (`testnetBase`, `baseSepolia`)
-- Arbitrum Sepolia (`testnet`, `testnetArbitrum`, `arbitrumSepolia`)
-- BNB Smart Chain Testnet (`testnetBsc`, `bscTestnet`)
 
 ## Supported Tokens
+
 - `USDC`
 - `cbBTC` (base)
 - `WETH` (base)
@@ -55,7 +57,6 @@ List of all supported chain.
     get_trade_history
 ```
 
-
 ### Exchange
 
 ```python
@@ -68,7 +69,6 @@ List of all supported chain.
     withdraw_collateral
 ```
 
-
 ## Usage
 
 ### Initialize the Client
@@ -80,7 +80,7 @@ from desk.info import Info
 
 # Initialize authentication
 auth = Auth(
-    network="mainnet", # mainnet, testnet
+    network="mainnet", # mainnet
     private_key="YOUR_PRIVATE_KEY",
     rpc_url="https://base-rpc.publicnode.com",
     account="YOUR_ACCOUNT_ADDRESS",
@@ -89,13 +89,13 @@ auth = Auth(
 
 # Initialize exchange client
 exchange = Exchange(
-    network="mainnet", # mainnet, mainnetArbitrum, testnetBsc
+    network="mainnet", # mainnet, mainnetArbitrum
     auth=auth
 )
 
 # Initialize info client
 info = Info(
-    network="mainnet", # mainnet, mainnetArbitrum, testnetBsc
+    network="mainnet", # mainnet, mainnetArbitrum
     skip_ws=False
 )
 ```
